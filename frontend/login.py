@@ -2,10 +2,12 @@
 import tkinter as tk
 from tkinter import messagebox
 from tenant_dashboard import open_tenant_dashboard  # import dashboard function
+from Front_Desk_dashboard import open_frontdesk_dashboard  # import dashboard function
 
 # Simulated users
 USERS = {
     "tenant1": {"password": "pass123", "role": "Tenant"},
+    "frontdesk1": {"password": "pass456", "role": "FrontDesk"},
 }
 
 def run_login():
@@ -25,6 +27,10 @@ def run_login():
                 messagebox.showinfo("Login Successful", f"Welcome {username}!\nRole: {role}")
                 root.destroy()  # Close login
                 open_tenant_dashboard(username)  # Open tenant dashboard
+            if role == "FrontDesk":
+                messagebox.showinfo("Login Successful", f"Welcome {username}!\nRole: {role}")
+                root.destroy()  # Close login
+                open_frontdesk_dashboard(username)  # Open front desk dashboard
             else:
                 messagebox.showinfo("Login", f"Role '{role}' not implemented yet")
         else:
