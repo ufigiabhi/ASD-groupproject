@@ -19,7 +19,7 @@ def open_tenant_dashboard(username):
     ).pack(side="left", padx=20)
 
     def logout():
-        import login
+        from frontend import login
         if messagebox.askyesno("Logout", "Are you sure you want to logout?"):
             root.destroy()
             login.run_login()

@@ -77,3 +77,30 @@ class MaintenanceService:
         conn.close()
 
         return result
+
+    # ============================
+    # Phase C – NEW FUNCTIONALITY
+    # ============================
+
+    def get_all_requests(self):
+        """
+        Fetch all maintenance requests from the database.
+        Used for dashboards and admin views.
+        """
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            SELECT *
+            FROM maintenance_requests
+            ORDER BY submission_date DESC
+            """
+        )
+
+        results = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return results
