@@ -6,7 +6,7 @@ from frontend.Front_Desk_dashboard import open_frontdesk_dashboard
 USERS = {
     "tenant1": {"password": "pass123", "role": "Tenant"},
     "frontdesk1": {"password": "pass456", "role": "FrontDesk"},
-    "finance1": { password": "pass789", "role": "finance"}
+    "finance1": { "password": "pass789", "role": "finance"}
 }
 
 PRIMARY = "#0d47a1"
