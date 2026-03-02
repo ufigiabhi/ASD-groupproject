@@ -2,11 +2,12 @@ import tkinter as tk
 from tkinter import messagebox
 from frontend.tenant_dashboard import open_tenant_dashboard
 from frontend.Front_Desk_dashboard import open_frontdesk_dashboard
+from frontend.Finance import open_frontdesk_dashboard
 
 USERS = {
     "tenant1": {"password": "pass123", "role": "Tenant"},
     "frontdesk1": {"password": "pass456", "role": "FrontDesk"},
-    "finance1": { "password": "pass789", "role": "finance"}
+    "Finance": {"password": "Pass789", "role": "Finance"}
 }
 
 PRIMARY = "#0d47a1"
@@ -58,6 +59,8 @@ def run_login():
             root.destroy()
             if role == "Tenant":
                 open_tenant_dashboard(u)
+            elif:
+                open_finance(u)
             else:
                 open_frontdesk_dashboard(u)
         else:
