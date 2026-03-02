@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 from frontend.tenant_dashboard import open_tenant_dashboard
 from frontend.Front_Desk_dashboard import open_frontdesk_dashboard
-from frontend.Finance import open_frontdesk_dashboard
+from frontend.Finance import Finance
 
 USERS = {
     "tenant1": {"password": "pass123", "role": "Tenant"},
