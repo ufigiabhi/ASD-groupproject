@@ -71,7 +71,7 @@ tk.Button(
     command=draw_graph
 ).pack(pady=10)
 
-def finance_manager_page(username):
+def open_Finance(username):
     root = tk.Tk()
     root.title(f"Finance Dashboard - {username}")
     root.geometry("700x650")
