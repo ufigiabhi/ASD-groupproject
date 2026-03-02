@@ -7,7 +7,7 @@ from frontend.Finance import open_Finance
 USERS = {
     "tenant1": {"password": "pass123", "role": "Tenant"},
     "frontdesk1": {"password": "pass456", "role": "FrontDesk"},
-    "finance": {"password": "Pass789", "role": "Finance"}
+    "finance": {"password": "pass789", "role": "Finance"}
 }
 
 PRIMARY = "#0d47a1"
