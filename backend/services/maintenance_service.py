@@ -3,17 +3,18 @@ from backend.database.db import get_connection
 
 
 class MaintenanceService:
-    def create_request(self, apartment_id, description, priority="Medium"):
+    def create_request(self, apartment_id, description, priority="Medium",
+                       tenant_id=None):
         conn = get_connection()
         cursor = conn.cursor()
 
         cursor.execute(
             """
             INSERT INTO maintenance_requests
-            (apartment_id, description, priority, status, submission_date)
-            VALUES (%s, %s, %s, %s, %s)
+            (apartment_id, tenant_id, description, priority, status, submission_date)
+            VALUES (%s, %s, %s, %s, %s, %s)
             """,
-            (apartment_id, description, priority, "OPEN", datetime.now())
+            (apartment_id, tenant_id, description, priority, "OPEN", datetime.now())
         )
 
         conn.commit()
@@ -103,4 +104,47 @@ class MaintenanceService:
         cursor.close()
         conn.close()
 
+        return results
+
+    def get_requests_for_tenant(self, tenant_id: int):
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(
+            """
+            SELECT * FROM maintenance_requests
+            WHERE tenant_id = %s
+            ORDER BY submission_date DESC
+            """,
+            (tenant_id,)
+        )
+        results = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return results
+
+    def get_open_requests(self):
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(
+            """
+            SELECT mr.*, a.unit_number, p.name AS property_name, p.city,
+                   t.name AS tenant_name
+            FROM maintenance_requests mr
+            JOIN apartments a ON mr.apartment_id = a.id
+            JOIN properties p ON a.property_id = p.id
+            LEFT JOIN tenants t ON mr.tenant_id = t.id
+            WHERE mr.status IN ('OPEN','IN_PROGRESS')
+            ORDER BY
+                CASE mr.priority
+                    WHEN 'Emergency' THEN 1
+                    WHEN 'High'      THEN 2
+                    WHEN 'Medium'    THEN 3
+                    WHEN 'Low'       THEN 4
+                END,
+                mr.submission_date
+            """
+        )
+        results = cursor.fetchall()
+        cursor.close()
+        conn.close()
         return results

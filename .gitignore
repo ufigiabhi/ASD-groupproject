@@ -7,3 +7,7 @@ venv/
 # os files
 .DS_Store
 Thumbs.db
+
+# Office temp files
+*.ods
+~$*

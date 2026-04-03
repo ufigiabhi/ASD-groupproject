@@ -1,281 +1,378 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, ttk
 from backend.services.maintenance_service import MaintenanceService
 from backend.services.tenant_service import TenantService
 from backend.services.complaint_service import ComplaintService
+from backend.services.lease_service import LeaseService
+from backend.services.apartment_service import ApartmentService
+
+PRIMARY = "#0d47a1"
+ACCENT  = "#1976d2"
+BG = "#f0f4f8"
+
+MONTHS = ["January", "February", "March", "April", "May", "June",
+          "July", "August", "September", "October", "November", "December"]
+YEARS  = [str(y) for y in range(2024, 2032)]
+LEASE_PERIOD_OPTIONS = ["6", "12", "18", "24", "36"]
+APT_TYPE_OPTIONS = ["Studio", "1-Bedroom", "2-Bedroom", "3-Bedroom", "4-Bedroom+"]
 
 
-def open_frontdesk_dashboard(username):
+def open_frontdesk_dashboard(user: dict):
+    username = user["full_name"] if isinstance(user, dict) else str(user)
+
     maintenance_service = MaintenanceService()
     tenant_service = TenantService()
-    complaint_service = ComplaintService()
+    complaint_service   = ComplaintService()
+    lease_service = LeaseService()
+    apartment_service   = ApartmentService()
 
     root = tk.Tk()
-    root.title("Front Desk Dashboard - FULL DATABASE")
-    root.geometry("1000x650")
-    root.configure(bg="#f0f4f8")
+    root.title(f"Front Desk - {username}")
+    root.geometry("1100x720")
+    root.configure(bg=BG)
 
-    root.grid_rowconfigure(1, weight=1)
-    root.grid_columnconfigure(0, weight=1)
-    root.grid_columnconfigure(1, weight=1)
-
-    header = tk.Frame(root, bg="#0d47a1", height=50)
-    header.grid(row=0, column=0, columnspan=2, sticky="ew")
-
-    tk.Label(
-        header,
-        text="Front Desk Staff Panel - ALL DATA IN DATABASE",
-        font=("Helvetica", 16, "bold"),
-        bg="#0d47a1",
-        fg="white"
-    ).pack(side="left", padx=20)
+    #   Header  
+    header = tk.Frame(root, bg=PRIMARY, height=52)
+    header.pack(fill="x")
+    tk.Label(header, text=f"Front Desk Dashboard - {username}",
+             font=("Helvetica", 15, "bold"), bg=PRIMARY, fg="white"
+             ).pack(side="left", padx=20, pady=10)
 
     def logout():
         from frontend import login
-        if messagebox.askyesno("Logout", "Are you sure you want to logout?"):
+        if messagebox.askyesno("Logout", "Are you sure?"):
             root.destroy()
             login.run_login()
 
-    tk.Button(
-        header,
-        text="Logout",
-        bg="#c62828",
-        fg="white",
-        command=logout
-    ).pack(side="right", padx=20)
+    tk.Button(header, text="Logout", bg="#c62828", fg="white",
+              font=("Helvetica", 10, "bold"), relief="flat",
+              command=logout).pack(side="right", padx=15, pady=10)
 
-    def scrollable_section(parent, title):
-        frame = tk.LabelFrame(parent, text=title, bg="white", fg="#0d47a1")
-        frame.grid(sticky="nsew", padx=15, pady=15)
-        frame.grid_rowconfigure(0, weight=1)
-        frame.grid_columnconfigure(0, weight=1)
+    #   Notebook (tabs)  
+    nb = ttk.Notebook(root)
+    nb.pack(fill="both", expand=True, padx=10, pady=10)
 
-        canvas = tk.Canvas(frame, bg="white", highlightthickness=0)
-        scrollbar = tk.Scrollbar(frame, orient="vertical", command=canvas.yview)
-        canvas.configure(yscrollcommand=scrollbar.set)
+     # TAB 1 - Register Tenant
+    tab_reg = tk.Frame(nb, bg="white")
+    nb.add(tab_reg, text="  Register Tenant  ")
 
-        content = tk.Frame(canvas, bg="white")
-        canvas.create_window((0, 0), window=content, anchor="nw")
-        content.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+    tk.Label(tab_reg, text="Register New Tenant",
+             font=("Helvetica", 14, "bold"), bg="white", fg=PRIMARY
+             ).grid(row=0, column=0, columnspan=4, pady=(15, 10), padx=20, sticky="w")
 
-        canvas.grid(row=0, column=0, sticky="nsew")
-        scrollbar.grid(row=0, column=1, sticky="ns")
+    fields_def = [
+        ("Full Name *", "name", "entry"),
+        ("NI Number *", "ni_number", "entry"),
+        ("Phone *", "phone", "entry"),
+        ("Email *", "email", "entry"),
+        ("Occupation", "occupation", "entry"),
+        ("Reference 1", "reference1", "entry"),
+        ("Reference 2", "reference2", "entry"),
+        ("Apartment Type *",   "apartment_type", "combo_apt"),
+        ("Lease Period (months) *", "lease_period_months", "combo_lease"),
+        ("Lease Start Month *","start_month", "combo_month"),
+        ("Lease Start Year *", "start_year", "combo_year"),
+        ("Monthly Rent (£) *", "monthly_rent", "entry"),
+        ("Deposit (£) *", "deposit_amount", "entry"),
+    ] 
 
-        return content
+    widgets = {}
+    for idx, (label, key, wtype) in enumerate(fields_def):
+        col = (idx % 2) * 2
+        row = (idx // 2) + 1
+        tk.Label(tab_reg, text=label, bg="white",
+                 font=("Helvetica", 10)).grid(row=row, column=col,
+                                              sticky="w", padx=(20 if col == 0 else 15, 5),
+                                              pady=3)
+        if wtype == "entry":
+            w = tk.Entry(tab_reg, font=("Helvetica", 10), width=26)
+        elif wtype == "combo_apt":
+            w = ttk.Combobox(tab_reg, values=APT_TYPE_OPTIONS,
+                             state="readonly", width=24)
+            w.set(APT_TYPE_OPTIONS[0])
+        elif wtype == "combo_lease":
+            w = ttk.Combobox(tab_reg, values=LEASE_PERIOD_OPTIONS,
+                             state="readonly", width=24)
+            w.set("12")
+        elif wtype == "combo_month":
+            w = ttk.Combobox(tab_reg, values=MONTHS,
+                             state="readonly", width=24)
+            w.set(MONTHS[0])
+        elif wtype == "combo_year":
+            w = ttk.Combobox(tab_reg, values=YEARS,
+                             state="readonly", width=24)
+            w.set(YEARS[0])
+        w.grid(row=row, column=col + 1, sticky="w",
+               padx=(0, 20), pady=3)
+        widgets[key] = w
 
-    # LEFT SIDE
-    left_container = tk.Frame(root, bg="#f0f4f8")
-    left_container.grid(row=1, column=0, sticky="nsew")
-    left_container.grid_rowconfigure(1, weight=1)
-    left_container.grid_columnconfigure(0, weight=1)
-
-    register_frame = tk.LabelFrame(
-        left_container,
-        text="Register New Tenant (DATABASE)",
-        bg="white",
-        fg="#0d47a1",
-        padx=10,
-        pady=10
-    )
-    register_frame.grid(row=0, column=0, sticky="ew", padx=15, pady=15)
-
-    fields = {}
-    for label in ["Name", "NI Number", "Phone", "Email", "Apartment Type", "Lease Period"]:
-        tk.Label(register_frame, text=label, bg="white").pack(anchor="w")
-        entry = tk.Entry(register_frame)
-        entry.pack(fill="x", pady=2)
-        fields[label] = entry
+    def _get(key):
+        w = widgets[key]
+        return w.get().strip() if hasattr(w, "get") else ""
 
     def register_tenant():
-        tenant = {k: v.get().strip() for k, v in fields.items()}
-        if "" in tenant.values():
-            messagebox.showwarning("Missing Data", "All fields are required")
+        required = ["name", "ni_number", "phone", "email",
+                    "apartment_type", "lease_period_months",
+                    "start_month", "start_year",
+                    "monthly_rent", "deposit_amount"]
+        for k in required:
+            if not _get(k):
+                messagebox.showwarning("Missing Data", f"'{k}' is required.")
+                return
+
+        # Validate numeric fields
+        try:
+            rent    = float(_get("monthly_rent"))
+            deposit = float(_get("deposit_amount"))
+            period  = int(_get("lease_period_months"))
+        except ValueError:
+            messagebox.showerror("Invalid Data", "Rent, deposit and lease period must be numbers.")
             return
 
         try:
-            tenant_service.register_tenant(
-                tenant["Name"],
-                tenant["NI Number"],
-                tenant["Phone"],
-                tenant["Email"],
-                tenant["Apartment Type"],
-                tenant["Lease Period"]
+            tenant_id = tenant_service.register_tenant(
+                name=_get("name"),
+                ni_number=_get("ni_number"),
+                phone=_get("phone"),
+                email=_get("email"),
+                occupation=_get("occupation"),
+                reference1=_get("reference1"),
+                reference2=_get("reference2"),
+                apartment_type=_get("apartment_type"),
+                lease_period_months=period,
             )
 
-            for e in fields.values():
-                e.delete(0, tk.END)
+            # Build start/end dates
+            from datetime import date
+            import calendar
+            m_idx = MONTHS.index(_get("start_month")) + 1
+            y     = int(_get("start_year"))
+            start = date(y, m_idx, 1)
+            # end = start + N months
+            end_month = m_idx + period
+            end_year  = y + (end_month - 1) // 12
+            end_month = ((end_month - 1) % 12) + 1
+            end = date(end_year, end_month, 1)
+
+            # Find a matching available apartment
+            available = apartment_service.get_available_apartments()
+            match = next(
+                (a for a in available
+                 if a["apartment_type"] == _get("apartment_type")),
+                None
+            )
+            if match:
+                lease_service.create_lease(
+                    tenant_id=tenant_id,
+                    apartment_id=match["id"],
+                    start_date=start,
+                    end_date=end,
+                    monthly_rent=rent,
+                    deposit_amount=deposit,
+                )
+                apt_info = f"Assigned: {match['property_name']} - Unit {match['unit_number']}"
+            else:
+                apt_info = "No matching apartment available - lease not created."
+
+            for w in widgets.values():
+                if isinstance(w, tk.Entry):
+                    w.delete(0, tk.END)
 
             refresh_tenants()
-            messagebox.showinfo("Success", "Tenant registered in database!")
+            messagebox.showinfo(
+                "Tenant Registered",
+                f"Tenant '{_get('name') or 'new tenant'}' registered.\n{apt_info}"
+            )
+        except Exception as exc:
+            messagebox.showerror("Database Error", str(exc))
 
-        except Exception as e:
-            messagebox.showerror("Database Error", str(e))
+    row_btn = len(fields_def) // 2 + 2
+    tk.Button(tab_reg, text="Register Tenant", bg=ACCENT, fg="white",
+              font=("Helvetica", 11, "bold"), relief="flat",
+              command=register_tenant).grid(
+        row=row_btn, column=0, columnspan=4, pady=18)
 
-    tk.Button(
-        register_frame,
-        text="Register Tenant",
-        bg="#1976d2",
-        fg="white",
-        command=register_tenant
-    ).pack(pady=8)
+     # TAB 2 - Tenant List
+    tab_tenants = tk.Frame(nb, bg="white")
+    nb.add(tab_tenants, text="  Tenants  ")
 
-    tenants_frame = scrollable_section(left_container, "Registered Tenants (DATABASE)")
-    tenants_frame.master.grid(row=1, column=0, sticky="nsew")
+    tk.Label(tab_tenants, text="Registered Tenants",
+             font=("Helvetica", 13, "bold"), bg="white", fg=PRIMARY
+             ).pack(pady=(15, 5), padx=20, anchor="w")
+
+    cols_t = ("Name", "NI Number", "Phone", "Email", "Type", "Lease Period",
+              "Property", "Unit", "Lease End")
+    tree_t = ttk.Treeview(tab_tenants, columns=cols_t, show="headings", height=18)
+    for c in cols_t:
+        tree_t.heading(c, text=c)
+        tree_t.column(c, width=110, anchor="w")
+    tree_t.pack(fill="both", expand=True, padx=20, pady=10)
+
+    sb_t = ttk.Scrollbar(tab_tenants, orient="vertical", command=tree_t.yview)
+    tree_t.configure(yscrollcommand=sb_t.set)
 
     def refresh_tenants():
-        for widget in tenants_frame.winfo_children():
-            widget.destroy()
-
+        for row in tree_t.get_children():
+            tree_t.delete(row)
         try:
-            tenants = tenant_service.get_all_tenants()
-
-            if not tenants:
-                tk.Label(
-                    tenants_frame,
-                    text="No tenants registered yet",
-                    bg="white",
-                    fg="gray"
-                ).pack(anchor="w", pady=5)
-                return
-
-            for t in tenants:
-                tk.Label(
-                    tenants_frame,
-                    text=f"{t['name']} | {t['apartment_type']} | Lease: {t['lease_period']}",
-                    bg="white",
-                    font=("Helvetica", 11)
-                ).pack(anchor="w", pady=2)
-
+            for t in tenant_service.get_all_tenants():
+                tree_t.insert("", "end", values=(
+                    t.get("name", ""),
+                    t.get("ni_number", ""),
+                    t.get("phone", ""),
+                    t.get("email", ""),
+                    t.get("apartment_type", ""),
+                    f"{t.get('lease_period_months', '')} months",
+                    t.get("property_name", "-"),
+                    t.get("unit_number", "-"),
+                    str(t.get("end_date", "-")),
+                ))
         except Exception as e:
-            tk.Label(
-                tenants_frame,
-                text=f"Error: {str(e)}",
-                bg="white",
-                fg="red"
-            ).pack(anchor="w", pady=5)
+            messagebox.showerror("Error", str(e))
 
     refresh_tenants()
+    tk.Button(tab_tenants, text="Refresh", bg=ACCENT, fg="white",
+              relief="flat", command=refresh_tenants).pack(pady=5)
 
-    # RIGHT SIDE
-    right_container = tk.Frame(root, bg="#f0f4f8")
-    right_container.grid(row=1, column=1, sticky="nsew")
-    right_container.grid_rowconfigure(0, weight=1)
-    right_container.grid_rowconfigure(1, weight=1)
-    right_container.grid_columnconfigure(0, weight=1)
+    # TAB 3 - Maintenance Requests
+    tab_maint = tk.Frame(nb, bg="white")
+    nb.add(tab_maint, text="  Maintenance  ")
 
-    # MAINTENANCE
-    maintenance_frame = scrollable_section(right_container, "Maintenance Requests (DATABASE)")
-    maintenance_frame.master.grid(row=0, column=0, sticky="nsew")
+    tk.Label(tab_maint, text="Maintenance Requests",
+             font=("Helvetica", 13, "bold"), bg="white", fg=PRIMARY
+             ).pack(pady=(15, 5), padx=20, anchor="w")
+
+    cols_m = ("ID", "Apartment", "Description", "Priority", "Status",
+              "Submitted", "Assigned To")
+    tree_m = ttk.Treeview(tab_maint, columns=cols_m, show="headings", height=16)
+    for c in cols_m:
+        tree_m.heading(c, text=c)
+        tree_m.column(c, width=120, anchor="w")
+    tree_m.pack(fill="both", expand=True, padx=20, pady=5)
 
     def refresh_maintenance():
-        for widget in maintenance_frame.winfo_children():
-            widget.destroy()
-
+        for row in tree_m.get_children():
+            tree_m.delete(row)
         try:
-            requests = maintenance_service.get_all_requests()
-
-            if not requests:
-                tk.Label(
-                    maintenance_frame,
-                    text="No maintenance requests",
-                    bg="white",
-                    fg="gray"
-                ).pack(anchor="w", pady=5)
-                return
-
-            for r in requests:
-                text = f"Apt {r['apartment_id']} | {r['description']} | {r['priority']} | {r['status']}"
-                tk.Label(
-                    maintenance_frame,
-                    text=text,
-                    bg="white",
-                    fg="#2e7d32",
-                    font=("Helvetica", 11)
-                ).pack(anchor="w", pady=2)
-
+            for r in maintenance_service.get_all_requests():
+                tree_m.insert("", "end", values=(
+                    r.get("id"), r.get("apartment_id"),
+                    r.get("description", "")[:50],
+                    r.get("priority"), r.get("status"),
+                    str(r.get("submission_date", ""))[:16],
+                    r.get("assigned_staff") or "-",
+                ))
         except Exception as e:
-            tk.Label(
-                maintenance_frame,
-                text=f"Error: {str(e)}",
-                bg="white",
-                fg="red"
-            ).pack(anchor="w", pady=5)
+            messagebox.showerror("Error", str(e))
 
     refresh_maintenance()
 
-    def add_request_popup():
-        popup = tk.Toplevel(root)
-        popup.title("New Maintenance Request")
-        popup.geometry("350x250")
+    def add_maintenance_popup():
+        pop = tk.Toplevel(root)
+        pop.title("New Maintenance Request")
+        pop.geometry("400x320")
+        pop.configure(bg="white")
 
-        tk.Label(popup, text="Apartment ID").pack(pady=5)
-        apt_entry = tk.Entry(popup)
-        apt_entry.pack(pady=5)
+        tk.Label(pop, text="Apartment ID", bg="white").pack(pady=(15, 2))
+        apt_e = tk.Entry(pop, width=30); apt_e.pack()
 
-        tk.Label(popup, text="Description").pack(pady=5)
-        desc_entry = tk.Entry(popup)
-        desc_entry.pack(pady=5)
+        tk.Label(pop, text="Description", bg="white").pack(pady=(10, 2))
+        desc_e = tk.Entry(pop, width=30); desc_e.pack()
 
-        tk.Label(popup, text="Priority").pack(pady=5)
-        priority_var = tk.StringVar(value="Medium")
-        tk.OptionMenu(popup, priority_var, "Low", "Medium", "High").pack(pady=5)
+        tk.Label(pop, text="Priority", bg="white").pack(pady=(10, 2))
+        pri_var = tk.StringVar(value="Medium")
+        ttk.Combobox(pop, textvariable=pri_var,
+                     values=["Low", "Medium", "High", "Emergency"],
+                     state="readonly", width=28).pack()
 
         def submit():
             try:
-                maintenance_service.create_request(int(apt_entry.get()), desc_entry.get(), priority_var.get())
-                popup.destroy()
+                maintenance_service.create_request(
+                    int(apt_e.get()), desc_e.get(), pri_var.get()
+                )
+                pop.destroy()
                 refresh_maintenance()
-                messagebox.showinfo("Success", "Request created!")
-            except Exception as e:
-                messagebox.showerror("Error", str(e))
+                messagebox.showinfo("Done", "Maintenance request created.")
+            except Exception as exc:
+                messagebox.showerror("Error", str(exc))
 
-        tk.Button(popup, text="Submit", bg="#1976d2", fg="white", command=submit).pack(pady=15)
+        tk.Button(pop, text="Submit", bg=ACCENT, fg="white",
+                  relief="flat", command=submit).pack(pady=18)
 
-    tk.Button(
-        right_container,
-        text="Add Maintenance Request",
-        bg="#1976d2",
-        fg="white",
-        command=add_request_popup
-    ).grid(row=0, column=0, sticky="s", pady=10)
+    tk.Button(tab_maint, text="+ Add Request", bg=ACCENT, fg="white",
+              relief="flat", command=add_maintenance_popup
+              ).pack(pady=8)
 
-    # COMPLAINTS
-    complaints_frame = scrollable_section(right_container, "Complaints (DATABASE)")
-    complaints_frame.master.grid(row=1, column=0, sticky="nsew")
+    # TAB 4 - Complaints
+    tab_comp = tk.Frame(nb, bg="white")
+    nb.add(tab_comp, text="  Complaints  ")
+
+    tk.Label(tab_comp, text="Tenant Complaints",
+             font=("Helvetica", 13, "bold"), bg="white", fg=PRIMARY
+             ).pack(pady=(15, 5), padx=20, anchor="w")
+
+    cols_c = ("ID", "Tenant", "Issue", "Category", "Status", "Submitted")
+    tree_c = ttk.Treeview(tab_comp, columns=cols_c, show="headings", height=14)
+    for c in cols_c:
+        tree_c.heading(c, text=c)
+        tree_c.column(c, width=140, anchor="w")
+    tree_c.pack(fill="both", expand=True, padx=20, pady=5)
 
     def refresh_complaints():
-        for widget in complaints_frame.winfo_children():
-            widget.destroy()
-
+        for row in tree_c.get_children():
+            tree_c.delete(row)
         try:
-            complaints = complaint_service.get_all_complaints()
-
-            if not complaints:
-                tk.Label(
-                    complaints_frame,
-                    text="No complaints",
-                    bg="white",
-                    fg="gray"
-                ).pack(anchor="w", pady=5)
-                return
-
-            for c in complaints:
-                tk.Label(
-                    complaints_frame,
-                    text=f"{c['tenant_name']} | {c['issue']} | {c['status']}",
-                    bg="white",
-                    fg="#6a1b9a",
-                    font=("Helvetica", 11)
-                ).pack(anchor="w", pady=2)
-
+            for c in complaint_service.get_all_complaints():
+                tree_c.insert("", "end", values=(
+                    c.get("id"), c.get("tenant_name"),
+                    c.get("issue", "")[:60],
+                    c.get("category", "Other"),
+                    c.get("status"),
+                    str(c.get("submission_date", ""))[:16],
+                ))
         except Exception as e:
-            tk.Label(
-                complaints_frame,
-                text=f"Error: {str(e)}",
-                bg="white",
-                fg="red"
-            ).pack(anchor="w", pady=5)
+            messagebox.showerror("Error", str(e))
 
     refresh_complaints()
+
+    def add_complaint_popup():
+        pop = tk.Toplevel(root)
+        pop.title("Log Complaint")
+        pop.geometry("420x320")
+        pop.configure(bg="white")
+
+        tk.Label(pop, text="Tenant Name", bg="white").pack(pady=(15, 2))
+        name_e = tk.Entry(pop, width=35); name_e.pack()
+
+        tk.Label(pop, text="Issue Description", bg="white").pack(pady=(10, 2))
+        issue_e = tk.Entry(pop, width=35); issue_e.pack()
+
+        tk.Label(pop, text="Category", bg="white").pack(pady=(10, 2))
+        cat_var = tk.StringVar(value="Other")
+        ttk.Combobox(pop, textvariable=cat_var,
+                     values=["Noise", "Repair", "Neighbour", "Billing", "Other"],
+                     state="readonly", width=33).pack()
+
+        def submit():
+            if not name_e.get().strip() or not issue_e.get().strip():
+                messagebox.showwarning("Missing", "Name and issue are required.")
+                return
+            try:
+                complaint_service.create_complaint(
+                    name_e.get().strip(),
+                    issue_e.get().strip(),
+                    cat_var.get()
+                )
+                pop.destroy()
+                refresh_complaints()
+                messagebox.showinfo("Done", "Complaint logged.")
+            except Exception as exc:
+                messagebox.showerror("Error", str(exc))
+
+        tk.Button(pop, text="Submit", bg=ACCENT, fg="white",
+                  relief="flat", command=submit).pack(pady=18)
+
+    tk.Button(tab_comp, text="+ Log Complaint", bg="#6a1b9a", fg="white",
+              relief="flat", command=add_complaint_popup).pack(pady=8)
 
     root.mainloop()
