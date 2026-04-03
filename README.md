@@ -52,26 +52,8 @@ NEW VERSION!!!!!!!!!!!
 
   ---
   Login Credentials
+<img width="299" height="407" alt="image" src="https://github.com/user-attachments/assets/06f056cf-c7fe-4fae-9b24-4f51f7a47a53" />
 
-  ┌─────────────┬────────────┬─────────────┐
-  │    Role     │  Username  │  Password   │
-  ├─────────────┼────────────┼─────────────┤
-  │ Admin       │ admin1     │ Admin@123   │
-  ├─────────────┼────────────┼─────────────┤
-  │ Manager     │ manager1   │ Manager@123 │
-  ├─────────────┼────────────┼─────────────┤
-  │ Front Desk  │ frontdesk1 │ Front@123   │
-  ├─────────────┼────────────┼─────────────┤
-  │ Finance     │ finance1   │ Finance@123 │
-  ├─────────────┼────────────┼─────────────┤
-  │ Maintenance │ maint1     │ Maint@123   │
-  ├─────────────┼────────────┼─────────────┤
-  │ Tenant      │ tenant1    │ Tenant@123  │
-  ├─────────────┼────────────┼─────────────┤
-  │ Tenant      │ tenant2    │ Tenant@123  │
-  ├─────────────┼────────────┼─────────────┤
-  │ Tenant      │ tenant3    │ Tenant@123  │
-  └─────────────┴────────────┴─────────────┘
 
   ---
   What Each Role Can Do
