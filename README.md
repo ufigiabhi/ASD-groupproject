@@ -6,8 +6,6 @@
 python main.py
 ```
 
-<<<<<<< HEAD
-NEW VERSION!!!!!!!!!!!
   How to Run
 
   python main.py
