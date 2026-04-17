@@ -71,31 +71,27 @@ python main.py
   36 unit tests covering all model classes and input validation.
 
   ---
-  Project Structure
+##  Project Structure
 
-  main.py                          - Entry point
-  backend/
-    database/
-      db.py                        - MySQL connection (change password here)
-      setup_db.py                  - One-time DB setup and mock data
-    models/                        - OOP model classes
-    services/                      - Business logic layer
-    tests/
-      test_models.py               - 36 automated unit tests
-  frontend/
-    login.py                       - Login screen (all 6 roles)
-    Front_Desk_dashboard.py        - Front Desk panel
-    Finance.py                     - Finance Manager panel
-    maintenance_dashboard.py       - Maintenance Staff panel
-    admin_dashboard.py             - Administrator panel
-    manager_dashboard.py           - Manager panel
-    tenant_dashboard.py            - Tenant portal
-  database_setup.sql               - SQL schema reference
-  Dump_PAMS_latest.sql             - Full database dump with mock data
-  requirements.txt                 - Python dependencies
-  HOW_TO_RUN.txt                   - Detailed instructions
-=======
----
+| Path / File | Description |
+|------------|-------------|
+| **main.py** | Entry point of the application |
+| **backend/database/db.py** | MySQL connection (update password here) |
+| **backend/database/setup_db.py** | One‑time DB setup + mock data insertion |
+| **backend/models/** | OOP model classes |
+| **backend/services/** | Business logic layer |
+| **backend/tests/test_models.py** | 36 automated unit tests |
+| **frontend/login.py** | Login screen (all 6 user roles) |
+| **frontend/Front_Desk_dashboard.py** | Front Desk dashboard |
+| **frontend/Finance.py** | Finance Manager dashboard |
+| **frontend/maintenance_dashboard.py** | Maintenance Staff dashboard |
+| **frontend/admin_dashboard.py** | Administrator dashboard |
+| **frontend/manager_dashboard.py** | Manager dashboard |
+| **frontend/tenant_dashboard.py** | Tenant portal |
+| **database_setup.sql** | SQL schema reference |
+| **Dump_PAMS_latest.sql** | Full database dump with mock data |
+| **requirements.txt** | Python dependencies |
+| **HOW_TO_RUN.txt** | Detailed instructions for running the project |
 
 ## First-Time Setup (everyone needs to do this once)
 
