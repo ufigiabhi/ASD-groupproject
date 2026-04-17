@@ -91,7 +91,6 @@ python main.py
 | **database_setup.sql** | SQL schema reference |
 | **Dump_PAMS_latest.sql** | Full database dump with mock data |
 | **requirements.txt** | Python dependencies |
-| **HOW_TO_RUN.txt** | Detailed instructions for running the project |
 
 ## First-Time Setup (everyone needs to do this once)
 
@@ -174,29 +173,4 @@ python -m unittest backend.tests.test_models -v
 
 ---
 
-## Project Structure
-
-```
-main.py                          - Entry point
-backend/
-  database/
-    db.py                        - MySQL connection (change password here)
-    setup_db.py                  - One-time DB setup and mock data
-  models/                        - OOP model classes
-  services/                      - Business logic layer
-  tests/
-    test_models.py               - 36 automated unit tests
-frontend/
-  login.py                       - Login screen (all 6 roles)
-  Front_Desk_dashboard.py        - Front Desk panel
-  Finance.py                     - Finance Manager panel
-  maintenance_dashboard.py       - Maintenance Staff panel
-  admin_dashboard.py             - Administrator panel
-  manager_dashboard.py           - Manager panel
-  tenant_dashboard.py            - Tenant portal
-database_setup.sql               - SQL schema reference
-Dump_PAMS_latest.sql             - Full database dump with mock data
-requirements.txt                 - Python dependencies
-HOW_TO_RUN.txt                   - Detailed instructions
-```
 >>>>>>> 0cfec3a (dashboards and database connections)
