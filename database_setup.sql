@@ -1,10 +1,7 @@
--- ============================================================
 -- PAMS - Paragon Apartment Management System
 -- Complete Database Schema
 -- Run this file in MySQL to set up all tables
--- Then run: python backend/database/setup_db.py
---   to populate mock data with correct password hashes
--- ============================================================
+-- Then run: python backend/database/setup_db.py to populate mock data with correct password hashes
 
 CREATE DATABASE IF NOT EXISTS asd_project;
 USE asd_project;
@@ -24,9 +21,7 @@ DROP TABLE IF EXISTS users;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
--- ============================================================
 -- USERS TABLE (all staff + tenant accounts)
--- ============================================================
 CREATE TABLE users (
     id            INT AUTO_INCREMENT PRIMARY KEY,
     username      VARCHAR(50)  UNIQUE NOT NULL,
@@ -41,9 +36,7 @@ CREATE TABLE users (
     last_login    DATETIME
 );
 
--- ============================================================
 -- PROPERTIES TABLE (multi-city offices)
--- ============================================================
 CREATE TABLE properties (
     id           INT AUTO_INCREMENT PRIMARY KEY,
     name         VARCHAR(100) NOT NULL,
@@ -54,9 +47,7 @@ CREATE TABLE properties (
     year_built   YEAR
 );
 
--- ============================================================
 -- APARTMENTS TABLE
--- ============================================================
 CREATE TABLE apartments (
     id             INT AUTO_INCREMENT PRIMARY KEY,
     property_id    INT          NOT NULL,
@@ -71,9 +62,7 @@ CREATE TABLE apartments (
     FOREIGN KEY (property_id) REFERENCES properties(id)
 );
 
--- ============================================================
 -- TENANTS TABLE (expanded with all required fields)
--- ============================================================
 CREATE TABLE tenants (
     id                  INT AUTO_INCREMENT PRIMARY KEY,
     user_id             INT,
@@ -90,9 +79,7 @@ CREATE TABLE tenants (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
--- ============================================================
 -- LEASES TABLE
--- ============================================================
 CREATE TABLE leases (
     id                    INT AUTO_INCREMENT PRIMARY KEY,
     tenant_id             INT          NOT NULL,
@@ -109,12 +96,10 @@ CREATE TABLE leases (
     FOREIGN KEY (apartment_id) REFERENCES apartments(id)
 );
 
--- ============================================================
 -- INVOICES TABLE
--- ============================================================
 CREATE TABLE invoices (
     id          INT AUTO_INCREMENT PRIMARY KEY,
-    tenant_id   INT           NOT NULL,
+    tenant_id   INT NOT NULL,
     lease_id    INT,
     amount      DECIMAL(10,2) NOT NULL,
     issue_date  DATE          NOT NULL,
@@ -127,9 +112,7 @@ CREATE TABLE invoices (
     FOREIGN KEY (lease_id)  REFERENCES leases(id)
 );
 
--- ============================================================
 -- PAYMENTS TABLE
--- ============================================================
 CREATE TABLE payments (
     id             INT AUTO_INCREMENT PRIMARY KEY,
     invoice_id     INT           NOT NULL,
@@ -144,9 +127,7 @@ CREATE TABLE payments (
     FOREIGN KEY (tenant_id)  REFERENCES tenants(id)
 );
 
--- ============================================================
 -- MAINTENANCE REQUESTS TABLE (updated)
--- ============================================================
 CREATE TABLE maintenance_requests (
     id              INT AUTO_INCREMENT PRIMARY KEY,
     apartment_id    INT          NOT NULL,
@@ -165,9 +146,7 @@ CREATE TABLE maintenance_requests (
     FOREIGN KEY (tenant_id)    REFERENCES tenants(id)
 );
 
--- ============================================================
 -- COMPLAINTS TABLE (updated)
--- ============================================================
 CREATE TABLE complaints (
     id              INT AUTO_INCREMENT PRIMARY KEY,
     tenant_id       INT,
