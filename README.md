@@ -6,8 +6,6 @@
 python main.py
 ```
 
-# How to Run python main.py
-
   ---
   First-Time Setup (everyone needs to do this once)
 
