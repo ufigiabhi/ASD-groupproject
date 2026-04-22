@@ -42,6 +42,8 @@ def create_tables():
     conn = get_conn()
     cur = conn.cursor()
 
+    # Disable foreign key checks (needed before dropping tables)
+
     cur.execute("SET FOREIGN_KEY_CHECKS = 0")
 
     tables = [
