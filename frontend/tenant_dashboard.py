@@ -316,7 +316,6 @@ def open_tenant_dashboard(user: dict):
             messagebox.showerror("Error", str(e))
 
     # Open a popup form for submitting a new maintenance request
-
     def submit_maintenance():
         pop = tk.Toplevel(root)
         pop.title("New Maintenance Request")
@@ -335,13 +334,16 @@ def open_tenant_dashboard(user: dict):
                      values=["Low", "Medium", "High", "Emergency"],
                      state="readonly", width=38).pack(padx=20)
 
+        # Validate the entered description and create the maintenance request
         def do_submit():
             desc = desc_e.get("1.0", tk.END).strip()
             if not desc:
                 messagebox.showwarning("Missing", "Please describe the issue.")
                 return
             try:
+                # Fallback apartment ID used if active lease information cannot be found
                 apt_id = 1  # default; in a real flow this comes from the lease
+                # Try to use the apartment linked to the tenant's active lease
                 if tenant and tenant.get("lease_id"):
                     # get apartment_id from active lease
                     from backend.services.lease_service import LeaseService
@@ -350,6 +352,7 @@ def open_tenant_dashboard(user: dict):
                     if lease:
                         apt_id = lease.get("apartment_id", 1)
 
+                # Save the request and refresh the maintenance table
                 maint_svc.create_request(apt_id, desc, pri_var.get(), tenant_id)
                 pop.destroy()
                 refresh_maintenance()
@@ -360,10 +363,13 @@ def open_tenant_dashboard(user: dict):
         tk.Button(pop, text="Submit", bg=ACCENT, fg="white",
                   relief="flat", command=do_submit).pack(pady=15)
 
+    # Button that opens the maintenance request popup
     tk.Button(tab_maint, text="+ Submit Request", bg=ACCENT, fg="white",
               relief="flat", command=submit_maintenance).pack(pady=8)
+    # Load maintenance history when the tab is created
     refresh_maintenance()
 
+    # Tab displaying complaint history and allowing new complaint submissions
     # TAB 4 - Complaints
     tab_comp = tk.Frame(nb, bg="white")
     nb.add(tab_comp, text="  Complaints  ")
