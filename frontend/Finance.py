@@ -36,7 +36,7 @@ def open_Finance(user: dict):
     tk.Label(header, text=f"Finance Manager - {username}",
              font=("Helvetica", 15, "bold"), bg=PRIMARY, fg="white"
              ).pack(side="left", padx=20, pady=10)
-# Using the same technique to logout
+# Using the same technique to logout as most other pages.
     def logout():
         from frontend import login
         if messagebox.askyesno("Logout", "Are you sure?"):
@@ -96,7 +96,7 @@ def open_Finance(user: dict):
         except Exception as exc:
             messagebox.showerror("DB Error", str(exc))
             return
-# should show money needed and paid
+# should show money needed and paid for tables and general.
         collected = float(summary["collected"] or 0)
         pending   = float(summary["pending"]   or 0)
         overdue   = float(summary["overdue"]   or 0)
