@@ -22,6 +22,10 @@ def hash_password(password: str) -> str:
 
 
 def get_conn(with_db=True):
+     """
+    Create and return a database connection.
+    If with_db=False, connect without selecting a database.
+    """
     cfg = dict(DB_CONFIG)
     if with_db:
         cfg["database"] = DB_NAME
