@@ -1,3 +1,10 @@
+# ================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    Esila Keskin / Abhinav Singh Rawat
+# Student ID(s):  24064432  / 24027772
+# Description: Tenant portal - lease details, payment history, maintenance requests, complaint submission
+# ================================================================
 import tkinter as tk
 from tkinter import messagebox, ttk
 
