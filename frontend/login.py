@@ -1,7 +1,6 @@
 # ================================================================
 # Module:      UFCF8S-30-2 Advanced Software Development
 # Project:     PAMS - Paragon Apartment Management System
-# File:        [FILENAME].py
 # Author(s):    Esila Keskin / Abhinav Singh Rawat
 # Student ID(s):  24064432 / 24027772
 # Description: Login GUI - credential entry, SHA-256 authentication, role-based dashboard routing
