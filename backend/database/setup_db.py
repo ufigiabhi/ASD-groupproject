@@ -444,7 +444,7 @@ def insert_mock_data():
     print("  Tenant      | tenant3     | Tenant@123")
     print("=" * 50)
 
-
+# Script entry point
 if __name__ == "__main__":
     create_database()
     create_tables()
