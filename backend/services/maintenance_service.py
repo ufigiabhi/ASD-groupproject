@@ -51,6 +51,16 @@ class MaintenanceService:
         return request_id
 
     def assign_staff(self, request_id, staff_name):
+        """
+        Assigns a staff member to a maintenance request and updates
+        the request status to "IN_PROGRESS".
+        
+        Args:
+            request_id: The ID of the maintenance request to update.
+            staff_name: The name of the staff member being assigned.
+        """
+
+        
         conn = get_connection()
         cursor = conn.cursor()
 
