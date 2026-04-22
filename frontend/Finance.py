@@ -7,7 +7,7 @@ from datetime import datetime
 from backend.services.invoice_service import InvoiceService
 from backend.services.payment_service import PaymentService
 from backend.services.tenant_service import TenantService
-# simple colouring. ^ adding the backend stuff
+# simple colouring. ^ adding the backend stuff.
 PRIMARY = "#0d47a1"
 ACCENT  = "#1976d2"
 BG      = "#f0f4f8"
@@ -17,7 +17,7 @@ MONTHS      = ["All", "January", "February", "March", "April", "May", "June",
 MONTH_NUMS  = {name: idx for idx, name in enumerate(MONTHS)}   # "All"→0, "January"→1 …
 YEARS       = ["All"] + [str(y) for y in range(2024, 2028)]
 
-# mainly cosmetic/visual appearance
+# mainly cosmetic/visual appearance.
 def open_Finance(user: dict):
     username = user["full_name"] if isinstance(user, dict) else str(user)
 
@@ -36,7 +36,7 @@ def open_Finance(user: dict):
     tk.Label(header, text=f"Finance Manager - {username}",
              font=("Helvetica", 15, "bold"), bg=PRIMARY, fg="white"
              ).pack(side="left", padx=20, pady=10)
-# Using the same technique to logout as most other pages.
+# Using the same technique to logout as most other pages
     def logout():
         from frontend import login
         if messagebox.askyesno("Logout", "Are you sure?"):
@@ -79,7 +79,7 @@ def open_Finance(user: dict):
 
     summary_frame = tk.Frame(tab_overview, bg="white")
     summary_frame.pack(fill="x", padx=20, pady=5)
-
+# does
     def draw_overview():
         m_name = sel_month.get()
         y_str  = sel_year.get()
