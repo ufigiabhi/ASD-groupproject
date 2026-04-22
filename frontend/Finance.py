@@ -298,6 +298,7 @@ def open_Finance(user: dict):
              fg="#2e7d32", font=("Helvetica", 11, "bold")).pack(pady=5)
 
     def record_payment():
+              """Validate and save payment"""
         try:
             inv_id   = int(rec_inv_id.get().strip())
             ten_id   = int(rec_ten_id.get().strip())
@@ -356,5 +357,6 @@ def open_Finance(user: dict):
     tk.Button(tab_late, text="Refresh Overdue", bg="#c62828", fg="white",
               relief="flat", command=refresh_overdue).pack(pady=8)
     refresh_overdue()
-
+  
+    # Start GUI loop
     root.mainloop()
