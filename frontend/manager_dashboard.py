@@ -1,3 +1,10 @@
+# ================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    Aston George Merry
+# Student ID(s):  24063013
+# Description: Manager dashboard - occupancy charts, financial reports, maintenance costs, expand business
+# ================================================================
 import tkinter as tk
 from tkinter import messagebox, ttk
 import matplotlib.pyplot as plt
