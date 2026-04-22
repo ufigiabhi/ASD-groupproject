@@ -2,6 +2,10 @@ from datetime import datetime
 from backend.database.db import get_connection
 
 
+    # =====================================
+    # DEFINING MAINTENANCE SERVICE CLASS
+    # =====================================
+
 class MaintenanceService:
     def create_request(self, apartment_id, description, priority="Medium",
                        tenant_id=None):
