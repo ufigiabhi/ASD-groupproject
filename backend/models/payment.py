@@ -1,3 +1,10 @@
+# ================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    Esila Keskin
+# Student ID(s):  24064432
+# Description: Payment domain model - is_valid() checks for positive amount
+# ================================================================
 from datetime import datetime
 
 
