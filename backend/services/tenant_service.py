@@ -1,3 +1,10 @@
+# ================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    Abhinav Singh Rawat
+# Student ID(s): 24027772
+# Description: Tenant service - register, retrieve by ID and username, update, remove tenants
+# ================================================================
 from datetime import datetime
 from backend.database.db import get_connection
 
