@@ -1,3 +1,10 @@
+# ================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    Esila Keskin
+# Student ID(s):  24064432
+# Description: User domain model - SHA-256 hashing, verify_password(), login() with last_login_date update
+# ================================================================
 from datetime import datetime
 import hashlib
 
