@@ -339,6 +339,7 @@ def open_Finance(user: dict):
     tree_l.tag_configure("overdue", background="#ffcdd2")
 
     def refresh_overdue():
+         """Show overdue invoices"""
         for row in tree_l.get_children():
             tree_l.delete(row)
         try:
