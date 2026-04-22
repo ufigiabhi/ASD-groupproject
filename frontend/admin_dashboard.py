@@ -1,3 +1,10 @@
+# ================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    Esila Keskin 
+# Student ID(s):  24064432 
+# Description: Admin dashboard - user management, create and deactivate accounts per city
+# ================================================================
 import tkinter as tk
 from tkinter import messagebox, ttk
 
