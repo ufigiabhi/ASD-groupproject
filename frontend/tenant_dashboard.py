@@ -370,7 +370,7 @@ def open_tenant_dashboard(user: dict):
     refresh_maintenance()
 
     # Tab displaying complaint history and allowing new complaint submissions
-    # TAB 4 - Complaints
+# TAB 4 - Complaints
     tab_comp = tk.Frame(nb, bg="white")
     nb.add(tab_comp, text="  Complaints  ")
 
@@ -378,6 +378,7 @@ def open_tenant_dashboard(user: dict):
              font=("Helvetica", 13, "bold"), bg="white", fg=PRIMARY
              ).pack(pady=(15, 5), padx=20, anchor="w")
 
+    # Table columns for complaint records submitted by the tenant
     cols_c = ("ID", "Issue", "Category", "Status", "Submitted", "Resolved")
     tree_c = ttk.Treeview(tab_comp, columns=cols_c, show="headings", height=12)
     for c in cols_c:
@@ -385,12 +386,15 @@ def open_tenant_dashboard(user: dict):
         tree_c.column(c, width=140, anchor="w")
     tree_c.pack(fill="both", expand=True, padx=20, pady=5)
 
+    # Reload complaint records for the logged-in tenant
     def refresh_complaints():
+        # Clear existing complaint rows before refreshing the table
         for row in tree_c.get_children():
             tree_c.delete(row)
         if not tenant_id:
             return
         try:
+            # Fetch and display all complaints linked to this tenant
             for c in complaint_svc.get_complaints_for_tenant(tenant_id):
                 tree_c.insert("", "end", values=(
                     c.get("id"),
@@ -403,6 +407,7 @@ def open_tenant_dashboard(user: dict):
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
+    # Open a popup form for submitting a new complaint
     def add_complaint():
         pop = tk.Toplevel(root)
         pop.title("Submit Complaint")
@@ -421,12 +426,14 @@ def open_tenant_dashboard(user: dict):
                      values=["Noise", "Repair", "Neighbour", "Billing", "Other"],
                      state="readonly", width=38).pack(padx=20)
 
+        # Validate the complaint text and save the complaint record
         def submit():
             issue = issue_e.get("1.0", tk.END).strip()
             if not issue:
                 messagebox.showwarning("Missing", "Please describe the issue.")
                 return
             try:
+                # Create the complaint and refresh the complaint history table
                 complaint_svc.create_complaint(
                     username, issue, cat_var.get(), tenant_id
                 )
@@ -439,8 +446,11 @@ def open_tenant_dashboard(user: dict):
         tk.Button(pop, text="Submit", bg=ACCENT, fg="white",
                   relief="flat", command=submit).pack(pady=12)
 
+    # Button that opens the complaint submission popup
     tk.Button(tab_comp, text="+ Submit Complaint", bg="#6a1b9a", fg="white",
               relief="flat", command=add_complaint).pack(pady=8)
+    # Load complaint history when the tab is created
     refresh_complaints()
 
+    # Start the Tkinter event loop for the tenant dashboard
     root.mainloop()
