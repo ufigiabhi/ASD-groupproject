@@ -40,7 +40,7 @@ def open_Finance(user: dict):
     def logout():
         from frontend import login
         if messagebox.askyesno("Logout", "Are you sure?"):
-            root.destroy()
+            root.destroy() # Close dashboard
             login.run_login()
 
     tk.Button(header, text="Logout", bg="#c62828", fg="white",
