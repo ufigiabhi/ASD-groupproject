@@ -194,6 +194,8 @@ class MaintenanceService:
         
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
+
+        # Query the database for all requests belonging to the specified tenant
         cursor.execute(
             """
             SELECT * FROM maintenance_requests
@@ -202,9 +204,13 @@ class MaintenanceService:
             """,
             (tenant_id,)
         )
+
+        # Fetch all results from the query
         results = cursor.fetchall()
         cursor.close()
         conn.close()
+
+         # Return the list of the tenant's maintenance requests
         return results
 
     def get_open_requests(self):
