@@ -1,4 +1,14 @@
 # PAMS - Paragon Apartment Management System
+# Module: UFCF8S-30-2 Advanced Software Development
+# Group: 29
+# Members:
+  1. Esila Keskin - 
+  2. Abhinav Rawat - 
+  3. Aston Merry - 
+  4. John Davies - 
+  5. Sahiru Saunda Hennadige -
+
+---
 
 ## How to Run
 
