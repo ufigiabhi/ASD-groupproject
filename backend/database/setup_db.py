@@ -4,7 +4,7 @@ Run this once to create all tables and populate mock data.
 Usage:  python -m backend.database.setup_db
 """
 
-import hashlib
+import hashlib  # For password hashing
 from datetime import datetime, date, timedelta
 import mysql.connector
 
