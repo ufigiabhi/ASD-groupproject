@@ -1,3 +1,11 @@
+# ================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    Esila Keskin
+# Student ID(s):  24064432
+# Description: Invoice domain model - add_payment(), is_overdue() based on due date and status
+# ================================================================
+ 
 from datetime import datetime
 from backend.models.payment import Payment
 
