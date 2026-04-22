@@ -1,3 +1,10 @@
+# ================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    John Davies / Aston George Merry
+# Student ID(s):  24024782 / 24063013
+# Description: Finance dashboard - invoice browsing, payment recording, overdue alerts, receipt generation
+# ================================================================
 import tkinter as tk
 from tkinter import messagebox, ttk
 import matplotlib.pyplot as plt
@@ -7,7 +14,7 @@ from datetime import datetime
 from backend.services.invoice_service import InvoiceService
 from backend.services.payment_service import PaymentService
 from backend.services.tenant_service import TenantService
-
+# simple colouring. ^ adding the backend stuff.
 PRIMARY = "#0d47a1"
 ACCENT  = "#1976d2"
 BG      = "#f0f4f8"
@@ -17,7 +24,7 @@ MONTHS      = ["All", "January", "February", "March", "April", "May", "June",
 MONTH_NUMS  = {name: idx for idx, name in enumerate(MONTHS)}   # "All"→0, "January"→1 …
 YEARS       = ["All"] + [str(y) for y in range(2024, 2028)]
 
-
+# mainly cosmetic/visual appearance.
 def open_Finance(user: dict):
     username = user["full_name"] if isinstance(user, dict) else str(user)
 
@@ -36,11 +43,11 @@ def open_Finance(user: dict):
     tk.Label(header, text=f"Finance Manager - {username}",
              font=("Helvetica", 15, "bold"), bg=PRIMARY, fg="white"
              ).pack(side="left", padx=20, pady=10)
-
+# Using the same technique to logout as most other pages
     def logout():
         from frontend import login
         if messagebox.askyesno("Logout", "Are you sure?"):
-            root.destroy()
+            root.destroy() # Close dashboard
             login.run_login()
 
     tk.Button(header, text="Logout", bg="#c62828", fg="white",
@@ -79,7 +86,7 @@ def open_Finance(user: dict):
 
     summary_frame = tk.Frame(tab_overview, bg="white")
     summary_frame.pack(fill="x", padx=20, pady=5)
-
+# does
     def draw_overview():
         m_name = sel_month.get()
         y_str  = sel_year.get()
@@ -96,7 +103,7 @@ def open_Finance(user: dict):
         except Exception as exc:
             messagebox.showerror("DB Error", str(exc))
             return
-
+# should show money needed and paid for tables and general.
         collected = float(summary["collected"] or 0)
         pending   = float(summary["pending"]   or 0)
         overdue   = float(summary["overdue"]   or 0)
@@ -298,6 +305,7 @@ def open_Finance(user: dict):
              fg="#2e7d32", font=("Helvetica", 11, "bold")).pack(pady=5)
 
     def record_payment():
+              """Validate and save payment"""
         try:
             inv_id   = int(rec_inv_id.get().strip())
             ten_id   = int(rec_ten_id.get().strip())
@@ -338,6 +346,7 @@ def open_Finance(user: dict):
     tree_l.tag_configure("overdue", background="#ffcdd2")
 
     def refresh_overdue():
+         """Show overdue invoices"""
         for row in tree_l.get_children():
             tree_l.delete(row)
         try:
@@ -356,5 +365,6 @@ def open_Finance(user: dict):
     tk.Button(tab_late, text="Refresh Overdue", bg="#c62828", fg="white",
               relief="flat", command=refresh_overdue).pack(pady=8)
     refresh_overdue()
-
+  
+    # Start GUI loop
     root.mainloop()

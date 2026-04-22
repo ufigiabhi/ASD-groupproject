@@ -1,3 +1,10 @@
+# ================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    Esila Keskin
+# Student ID(s):  24064432
+# Description: Apartment domain model - assign_tenant(), vacate(), occupancy state management
+# ================================================================
 class Apartment:
     def __init__(
         self,

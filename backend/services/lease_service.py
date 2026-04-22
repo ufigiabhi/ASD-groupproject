@@ -1,3 +1,10 @@
+# ================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    Aston George Merry
+# Student ID(s): 24063013
+# Description: Lease service - create lease, early termination with 5% penalty, expiry alerts
+# ================================================================
 from datetime import date, timedelta
 from backend.database.db import get_connection
 

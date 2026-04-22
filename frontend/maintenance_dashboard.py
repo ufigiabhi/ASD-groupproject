@@ -1,3 +1,10 @@
+# ================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    Esila Keskin / Aston George Merry
+# Student ID(s):  24064432  / 24063013
+# Description: Maintenance Staff panel - priority 
+# ================================================================
 import tkinter as tk
 from tkinter import messagebox, ttk
 

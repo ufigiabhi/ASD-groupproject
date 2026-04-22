@@ -1,3 +1,10 @@
+# ================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    Esila Keskin
+# Student ID(s): 24064432
+# Description: Apartment service - CRUD for apartments and properties, occupancy summary per city
+# ================================================================
 from backend.database.db import get_connection
 
 

@@ -12,7 +12,7 @@ Run this once to create all tables and populate mock data.
 Usage:  python -m backend.database.setup_db
 """
 
-import hashlib
+import hashlib  # For password hashing
 from datetime import datetime, date, timedelta
 import mysql.connector
 
@@ -30,6 +30,10 @@ def hash_password(password: str) -> str:
 
 
 def get_conn(with_db=True):
+     """
+    Create and return a database connection.
+    If with_db=False, connect without selecting a database.
+    """
     cfg = dict(DB_CONFIG)
     if with_db:
         cfg["database"] = DB_NAME
@@ -37,6 +41,7 @@ def get_conn(with_db=True):
 
 
 def create_database():
+        """Create the database if it does not already exist"""
     conn = get_conn(with_db=False)
     cur = conn.cursor()
     cur.execute(f"CREATE DATABASE IF NOT EXISTS {DB_NAME}")
@@ -49,6 +54,8 @@ def create_database():
 def create_tables():
     conn = get_conn()
     cur = conn.cursor()
+
+    # Disable foreign key checks (needed before dropping tables)
 
     cur.execute("SET FOREIGN_KEY_CHECKS = 0")
 
@@ -452,7 +459,7 @@ def insert_mock_data():
     print("  Tenant      | tenant3     | Tenant@123")
     print("=" * 50)
 
-
+# Script entry point
 if __name__ == "__main__":
     create_database()
     create_tables()

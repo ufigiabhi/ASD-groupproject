@@ -11,7 +11,7 @@ from backend.database.db import get_connection
 
 LATE_FEE_AMOUNT = 50.00   # £50 fixed late fee
 
-
+# set up to make the invoice.
 class InvoiceService:
     def generate_invoice(self, tenant_id, lease_id, amount, month, year):
         """Create a monthly invoice due on the 28th of that month."""
@@ -43,7 +43,7 @@ class InvoiceService:
         cur.close()
         conn.close()
         return result
-
+# makes it for a tenant.
     def get_invoices_for_tenant(self, tenant_id: int):
         conn = get_connection()
         cur = conn.cursor(dictionary=True)

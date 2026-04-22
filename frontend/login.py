@@ -1,3 +1,10 @@
+# ================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    Esila Keskin / Abhinav Singh Rawat
+# Student ID(s):  24064432 / 24027772
+# Description: Login GUI - credential entry, SHA-256 authentication, role-based dashboard routing
+# ================================================================
 import tkinter as tk
 from tkinter import messagebox
 from backend.services.user_service import UserService
