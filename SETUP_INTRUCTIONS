@@ -1,0 +1,55 @@
+  ================================================================
+  PAMS - Paragon Apartment Management System
+  UFCF8S-30-2 Advanced Software Development
+  Group 29
+  ================================================================
+
+  REQUIREMENTS
+  ------------
+  - Python 3.10+
+  - MySQL Server 8.0+ running on localhost
+  - MySQL root password: 314159Pi.com
+
+  PYTHON PACKAGES (pip install)
+  -----------------------------
+  pip install mysql-connector-python matplotlib python-docx
+
+  Or run:
+  pip install -r requirements.txt
+
+  DATABASE SETUP
+  --------------
+  Option A - Restore full dump with data (recommended):
+    mysql -u root -p asd_project < database_dump.sql
+    (create the database first if needed: CREATE DATABASE asd_project;)
+
+  Option B - Fresh setup with mock data:
+    python -m backend.database.setup_db
+
+  HOW TO RUN
+  ----------
+  From the project root directory:
+    python main.py
+
+  LOGIN CREDENTIALS
+  -----------------
+  Role          | Username     | Password
+  --------------|--------------|-------------
+  Admin         | admin1       | Admin@123
+  Manager       | manager1     | Manager@123
+  Front Desk    | frontdesk1   | Front@123
+  Finance       | finance1     | Finance@123
+  Maintenance   | maint1       | Maint@123
+  Tenant        | tenant1      | Tenant@123
+  Tenant        | tenant2      | Tenant@123
+  Tenant        | tenant3      | Tenant@123
+
+  DATABASE CONFIG
+  ---------------
+  Host:     localhost
+  Database: asd_project
+  User:     root
+  Password: 314159Pi.com
+  (Config is in backend/database/db.py)
+
+  ================================================================
