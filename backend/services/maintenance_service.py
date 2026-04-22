@@ -93,10 +93,13 @@ class MaintenanceService:
             time_taken: The amount of time taken to resolve the request.
             cost: The cost incurred to resolve the request.
         """
-        
+
+        # Establish a connection to the database
         conn = get_connection()
         cursor = conn.cursor()
 
+        # Update the maintenance request with resolution details
+        # Status is set to "RESOLVED" and resolution date is set to now
         cursor.execute(
             """
             UPDATE maintenance_requests
