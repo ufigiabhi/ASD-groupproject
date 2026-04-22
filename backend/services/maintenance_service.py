@@ -154,10 +154,15 @@ class MaintenanceService:
         """
         Fetch all maintenance requests from the database.
         Used for dashboards and admin views.
+
+         Returns:
+            results: A list of dictionaries, each representing a maintenance request,
+                     ordered by submission date (most recent first).
         """
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
+         # Query all maintenance requests, ordered by most recent submission date
         cursor.execute(
             """
             SELECT *
@@ -166,11 +171,13 @@ class MaintenanceService:
             """
         )
 
+        # Fetch all results from the query
         results = cursor.fetchall()
 
         cursor.close()
         conn.close()
 
+        # Return the list of all maintenance requests
         return results
 
     def get_requests_for_tenant(self, tenant_id: int):
