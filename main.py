@@ -14,6 +14,8 @@ Run: python main.py
 Setup DB first: python -m backend.database.setup_db
 """
 
+import utils.transport
+import utils.session
 from frontend.login import run_login
 
 if __name__ == "__main__":
