@@ -7,7 +7,7 @@ from datetime import datetime
 from backend.services.invoice_service import InvoiceService
 from backend.services.payment_service import PaymentService
 from backend.services.tenant_service import TenantService
-# simple colouring
+# simple colouring. ^ adding the backend stuff
 PRIMARY = "#0d47a1"
 ACCENT  = "#1976d2"
 BG      = "#f0f4f8"
