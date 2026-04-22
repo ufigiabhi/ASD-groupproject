@@ -1,3 +1,10 @@
+# ================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    Esila Keskin
+# Student ID(s):  24064432
+# Description: MaintenanceRequest model -update_status(), assign_staff(), record_resolution()
+# ================================================================
 from datetime import datetime
 import uuid
 
