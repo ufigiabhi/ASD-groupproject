@@ -60,7 +60,6 @@ class MaintenanceService:
             staff_name: The name of the staff member being assigned.
         """
 
-        # Establish a connection to the database
         conn = get_connection()
         cursor = conn.cursor()
 
@@ -76,10 +75,8 @@ class MaintenanceService:
             ("IN_PROGRESS", staff_name, request_id)
         )
 
-        # Commit the transaction to save the changes
         conn.commit()
 
-        # Close the cursor and connection to free up resources
         cursor.close()
         conn.close()
 
@@ -127,20 +124,26 @@ class MaintenanceService:
             result: A dictionary containing the maintenance request details,
                     or None if no request was found.
         """
-        
+
+        # Establish a connection to the database
+        # dictionary=True returns results as a dictionary instead of a tuple
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
+        # Query the database for the maintenance request with the given ID
         cursor.execute(
             "SELECT * FROM maintenance_requests WHERE id = %s",
             (request_id,)
         )
 
+        # Fetch the single result from the query
         result = cursor.fetchone()
 
+        # Close the cursor and connection to free up resources
         cursor.close()
         conn.close()
 
+        # Return the maintenance request details
         return result
 
     # ============================
