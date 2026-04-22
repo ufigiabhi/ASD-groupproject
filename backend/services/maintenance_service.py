@@ -181,6 +181,17 @@ class MaintenanceService:
         return results
 
     def get_requests_for_tenant(self, tenant_id: int):
+        """
+        Retrieves all maintenance requests submitted by a specific tenant.
+        
+        Args:
+            tenant_id: The ID of the tenant whose requests are being retrieved.
+            
+        Returns:
+            results: A list of dictionaries representing the tenant's maintenance
+                     requests, ordered by submission date (most recent first).
+        """
+        
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
         cursor.execute(
