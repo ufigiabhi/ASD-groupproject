@@ -1,3 +1,10 @@
+# ================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    John Davies / Aston George Merry
+# Student ID(s):  24024782 / 24063013
+# Description: Finance dashboard - invoice browsing, payment recording, overdue alerts, receipt generation
+# ================================================================
 import tkinter as tk
 from tkinter import messagebox, ttk
 import matplotlib.pyplot as plt
