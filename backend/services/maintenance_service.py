@@ -1,7 +1,6 @@
 from datetime import datetime
 from backend.database.db import get_connection
 
-
     # =====================================
     # DEFINING MAINTENANCE SERVICE CLASS
     # =====================================
@@ -22,10 +21,13 @@ class MaintenanceService:
         Returns:
             request_id: The ID of the newly created maintenance request.
         """
-        
+
+        # Establish a connection to the database
         conn = get_connection()
         cursor = conn.cursor()
-
+        
+        # Insert the new maintenance request into the database
+        # Status is set to "OPEN" by default and submission date is set to now
         cursor.execute(
             """
             INSERT INTO maintenance_requests
