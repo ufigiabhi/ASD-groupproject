@@ -55,6 +55,7 @@ def open_tenant_dashboard(user: dict):
     # Header section showing the tenant portal title and logout option
     header = tk.Frame(root, bg=PRIMARY, height=52)
 
+    # Return the user to the login page after confirmation
     def logout():
         from frontend import login
         if messagebox.askyesno("Logout", "Are you sure?"):
@@ -65,25 +66,31 @@ def open_tenant_dashboard(user: dict):
               font=("Helvetica", 10, "bold"), relief="flat",
               command=logout).pack(side="right", padx=15, pady=10)
 
+    # Notebook widget used to separate dashboard features into tabs
     nb = ttk.Notebook(root)
     nb.pack(fill="both", expand=True, padx=10, pady=10)
 
+    # Tab displaying tenant personal details and current lease information
      # TAB 1 - My Details & Lease
     tab_info = tk.Frame(nb, bg="white")
     nb.add(tab_info, text="  My Details  ")
 
+    # Load and display the tenant's personal and lease details
     def load_info():
+        # Clear existing widgets before rebuilding the tab contents
         for w in tab_info.winfo_children():
             w.destroy()
         tk.Label(tab_info, text="My Details & Lease",
                  font=("Helvetica", 13, "bold"), bg="white", fg=PRIMARY
                  ).pack(pady=(15, 10), padx=25, anchor="w")
 
+        # Stop early if this account is not linked to a tenant record
         if not tenant_id:
             tk.Label(tab_info, text="No tenant record linked to this account.",
                      bg="white", fg="gray").pack(padx=25)
             return
 
+        # Retrieve full tenant and lease information from the backend
         try:
             t = tenant_svc.get_tenant_by_id(tenant_id)
         except Exception as exc:
@@ -94,6 +101,7 @@ def open_tenant_dashboard(user: dict):
             tk.Label(tab_info, text="Tenant record not found.", bg="white", fg="gray").pack()
             return
 
+        # Personal information fields shown in the top section
         info_rows = [
             ("Name", t.get("name", "")),
             ("NI Number", t.get("ni_number", "")),
@@ -101,6 +109,7 @@ def open_tenant_dashboard(user: dict):
             ("Email", t.get("email", "")),
             ("Occupation",   t.get("occupation", "-")),
         ]
+        # Lease and property information shown below the personal details
         lease_rows = [
             ("Property", t.get("property_name", "-")),
             ("City", t.get("city", "-")),
@@ -140,6 +149,7 @@ def open_tenant_dashboard(user: dict):
                      font=("Helvetica", 10), fg=clr, anchor="w"
                      ).grid(row=i, column=1, sticky="w", padx=(10, 0))
 
+        # Only show the early termination option when an active lease exists
         # Early termination button
         if t.get("lease_id"):
             tk.Button(
@@ -149,6 +159,8 @@ def open_tenant_dashboard(user: dict):
                 font=("Helvetica", 10),
                 command=lambda: request_early_termination(t["lease_id"])
             ).pack(pady=15, padx=25, anchor="w")
+
+    # Record an early termination request after tenant confirmation
 
     def request_early_termination(lease_id):
         if not messagebox.askyesno(
