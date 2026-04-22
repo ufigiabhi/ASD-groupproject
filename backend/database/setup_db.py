@@ -1,3 +1,11 @@
+#================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    Aston George Merry / Sahiru Saunda Hennadige
+# Student ID(s):  24063013  / 24048635
+# Description: Database seeding - inserts mock properties, apartments, and users with hashed passwords
+#================================================================
+
 """
 PAMS - Database Setup Script
 Run this once to create all tables and populate mock data.

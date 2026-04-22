@@ -1,3 +1,11 @@
+#================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    Esila Keskin 
+# Student ID(s):  24064432  
+# Description: PAMS entry point - imports and launces login GU
+#================================================================
+
 """
 PAMS - Paragon Apartment Management System
 Entry point.

@@ -1,3 +1,11 @@
+#================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    Esila Keskin 
+# Student ID(s):  24064432  
+# Description: Auth service - authentication wrapper used in model-layer unit tests
+#================================================================
+
 from backend.models.user import User
 
 

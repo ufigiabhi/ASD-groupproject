@@ -1,3 +1,11 @@
+#================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    Esila Keskin / Abhinav Singh Rawat
+# Student ID(s):  24064432  / 24027772
+# Description: Thirty-six automated unit tests for all six model classes and input validation logic
+#================================================================
+
 """
 Automated unit tests for PAMS model classes.
 

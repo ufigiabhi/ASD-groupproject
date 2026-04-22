@@ -1,3 +1,11 @@
+#================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    Esila Keskin / Aston George Merry
+# Student ID(s):  24064432  / 24063013
+# Description: Maintenance service - create requests, assign staff, resolve, CASE-ordered priority queue
+#================================================================
+
 from datetime import datetime
 from backend.database.db import get_connection
 

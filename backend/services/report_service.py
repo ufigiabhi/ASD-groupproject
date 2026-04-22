@@ -1,3 +1,11 @@
+#================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    Esila Keskin 
+# Student ID(s):  24064432  
+# Description: Report service - occupancy by city, financial summary, maintenance costs, lease expiry
+#================================================================
+
 from backend.database.db import get_connection
 
 

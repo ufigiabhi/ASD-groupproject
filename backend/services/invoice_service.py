@@ -1,3 +1,11 @@
+#================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    John Davies / Aston George Merry
+# Student ID(s):  24024782 / 24063013
+# Description: Invoice service - generate monthly invoices due 28th, overdue detection, mark paid
+#================================================================
+
 from datetime import date, timedelta
 from backend.database.db import get_connection
 

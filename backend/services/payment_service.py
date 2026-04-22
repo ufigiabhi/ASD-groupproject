@@ -1,3 +1,11 @@
+#================================================================
+# Module:      UFCF8S-30-2 Advanced Software Development
+# Project:     PAMS - Paragon Apartment Management System
+# Author(s):    Sahiru Saunda Hennadige / John Davies
+# Student ID(s):  24048635  / 24024782
+# Description: Payment service - record payment, generate UUID receipt number, financial summary
+#================================================================
+
 import uuid
 from datetime import datetime
 from backend.database.db import get_connection
