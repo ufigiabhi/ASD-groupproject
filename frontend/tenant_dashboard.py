@@ -161,7 +161,7 @@ def open_tenant_dashboard(user: dict):
             ).pack(pady=15, padx=25, anchor="w")
 
     # Record an early termination request after tenant confirmation
-    
+
     def request_early_termination(lease_id):
         if not messagebox.askyesno(
             "Early Termination",
@@ -284,6 +284,7 @@ def open_tenant_dashboard(user: dict):
              font=("Helvetica", 13, "bold"), bg="white", fg=PRIMARY
              ).pack(pady=(15, 5), padx=20, anchor="w")
 
+    # Table columns for tenant maintenance request history
     cols_m = ("ID", "Description", "Priority", "Status",
               "Submitted", "Scheduled", "Resolved")
     tree_m = ttk.Treeview(tab_maint, columns=cols_m, show="headings", height=12)
@@ -292,12 +293,15 @@ def open_tenant_dashboard(user: dict):
         tree_m.column(c, width=130, anchor="w")
     tree_m.pack(fill="both", expand=True, padx=20, pady=5)
 
+    # Reload maintenance requests linked to the current tenant
     def refresh_maintenance():
+        # Clear existing rows before refreshing maintenance data
         for row in tree_m.get_children():
             tree_m.delete(row)
         if not tenant_id:
             return
         try:
+            # Fetch and display all maintenance requests for this tenant
             for r in maint_svc.get_requests_for_tenant(tenant_id):
                 tree_m.insert("", "end", values=(
                     r.get("id"),
@@ -310,6 +314,8 @@ def open_tenant_dashboard(user: dict):
                 ))
         except Exception as e:
             messagebox.showerror("Error", str(e))
+
+    # Open a popup form for submitting a new maintenance request
 
     def submit_maintenance():
         pop = tk.Toplevel(root)
