@@ -9,6 +9,20 @@ from backend.database.db import get_connection
 class MaintenanceService:
     def create_request(self, apartment_id, description, priority="Medium",
                        tenant_id=None):
+
+        """
+        Creates a new maintenance request and inserts it into the database.
+        
+        Args:
+            apartment_id: The ID of the apartment requiring maintenance.
+            description: A description of the maintenance issue.
+            priority: The priority level of the request (default is "Medium").
+            tenant_id: The ID of the tenant submitting the request (optional).
+            
+        Returns:
+            request_id: The ID of the newly created maintenance request.
+        """
+        
         conn = get_connection()
         cursor = conn.cursor()
 
