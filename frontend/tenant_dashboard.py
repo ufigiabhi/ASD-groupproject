@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 
+# Service layer imports used to load tenant data, invoices, payments,
+# complaints, maintenance requests and lease actions from the backend
 from backend.services.tenant_service import TenantService
 from backend.services.invoice_service import InvoiceService
 from backend.services.payment_service import PaymentService
@@ -8,10 +10,12 @@ from backend.services.complaint_service import ComplaintService
 from backend.services.maintenance_service import MaintenanceService
 from backend.services.lease_service import LeaseService
 
+# Colour constants used to keep the tenant portal styling consistent
 PRIMARY = "#0d47a1"
 ACCENT  = "#1976d2"
 BG      = "#f0f4f8"
 
+# Month and year options used by the payment history filter controls
 MONTHS     = ["All", "January", "February", "March", "April", "May", "June",
               "July", "August", "September", "October", "November", "December"]
 MONTH_NUMS = {name: idx for idx, name in enumerate(MONTHS)}
@@ -19,8 +23,11 @@ YEARS      = ["All"] + [str(y) for y in range(2024, 2028)]
 
 
 def open_tenant_dashboard(user: dict):
+    # Use the full name when a user dictionary is provided,
+    # otherwise fall back to a string version of the value
     username = user["full_name"] if isinstance(user, dict) else str(user)
 
+    # Create service instances used across the different tenant portal tabs
     tenant_svc  = TenantService()
     invoice_svc = InvoiceService()
     payment_svc = PaymentService()
@@ -28,7 +35,7 @@ def open_tenant_dashboard(user: dict):
     maint_svc   = MaintenanceService()
     lease_svc   = LeaseService()
 
-    # Get tenant record from DB
+    # Try to find the tenant record linked to the logged-in user account
     try:
         tenant = tenant_svc.get_tenant_by_username(
             user["username"] if isinstance(user, dict) else username
@@ -36,19 +43,17 @@ def open_tenant_dashboard(user: dict):
     except Exception:
         tenant = None
 
+    # Store the tenant ID for reuse in payment, complaint and maintenance queries
     tenant_id = tenant["id"] if tenant else None
 
+    # Main tenant portal window setup
     root = tk.Tk()
     root.title(f"Tenant Portal - {username}")
     root.geometry("980x680")
     root.configure(bg=BG)
 
-    #   Header  
+    # Header section showing the tenant portal title and logout option
     header = tk.Frame(root, bg=PRIMARY, height=52)
-    header.pack(fill="x")
-    tk.Label(header, text=f"Tenant Portal - {username}",
-             font=("Helvetica", 15, "bold"), bg=PRIMARY, fg="white"
-             ).pack(side="left", padx=20, pady=10)
 
     def logout():
         from frontend import login
