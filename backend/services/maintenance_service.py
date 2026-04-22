@@ -84,6 +84,16 @@ class MaintenanceService:
         conn.close()
 
     def resolve_request(self, request_id, time_taken, cost):
+        """
+        Marks a maintenance request as resolved and records the time taken,
+        cost, and resolution date.
+        
+        Args:
+            request_id: The ID of the maintenance request to resolve.
+            time_taken: The amount of time taken to resolve the request.
+            cost: The cost incurred to resolve the request.
+        """
+        
         conn = get_connection()
         cursor = conn.cursor()
 
