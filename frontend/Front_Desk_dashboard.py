@@ -7,6 +7,7 @@
 # ================================================================
 import tkinter as tk
 from tkinter import messagebox, ttk
+import re
 
 # Service layer imports used to handle database/business logic
 from backend.services.maintenance_service import MaintenanceService
@@ -148,6 +149,32 @@ def open_frontdesk_dashboard(user: dict):
                 messagebox.showwarning("Missing Data", f"'{k}' is required.")
                 return
 
+        ni = _get("ni_number").upper()
+        if not re.match(r'^[A-Z]{2}\d{6}[A-Z]$', ni):
+            messagebox.showerror("Invalid NI Number",
+                "NI number must be in the format AB123456C (2 letters, 6 digits, 1 letter).")
+            return
+        email = _get("email")
+        if "@" not in email or "." not in email.split("@")[-1]:
+            messagebox.showerror("Invalid Email",
+                "Please enter a valid email address containing '@'.")
+            return
+        phone_digits = re.sub(r'\D', '', _get("phone"))
+        if len(phone_digits) < 10:
+            messagebox.showerror("Invalid Phone Number",
+                "Phone number must contain at least 10 digits.")
+            return
+        ref1 = _get("reference1")
+        if ref1 and len(ref1) < 5:
+            messagebox.showerror("Invalid Reference",
+                "Reference 1 must be at least 5 characters if provided.")
+            return
+        ref2 = _get("reference2")
+        if ref2 and len(ref2) < 5:
+            messagebox.showerror("Invalid Reference",
+                "Reference 2 must be at least 5 characters if provided.")
+            return
+
         # Validate numeric fields before sending data to the service layer
         try:
             rent    = float(_get("monthly_rent"))
@@ -155,6 +182,24 @@ def open_frontdesk_dashboard(user: dict):
             period  = int(_get("lease_period_months"))
         except ValueError:
             messagebox.showerror("Invalid Data", "Rent, deposit and lease period must be numbers.")
+            return
+
+        if rent <= 0:
+            messagebox.showerror("Invalid Rent", "Monthly rent must be greater than zero.")
+            return
+        if deposit <= 0:
+            messagebox.showerror("Invalid Deposit", "Deposit amount must be greater than zero.")
+            return
+
+        from datetime import date as _date
+        selected_m = MONTHS.index(_get("start_month")) + 1
+        selected_y = int(_get("start_year"))
+        selected_start = _date(selected_y, selected_m, 1)
+        today_first = _date.today().replace(day=1)
+        if selected_start < today_first:
+            messagebox.showerror("Invalid Lease Start Date",
+                f"Lease start date ({_get('start_month')} {selected_y}) cannot be earlier "
+                "than the current month.")
             return
 
         try:
@@ -172,17 +217,15 @@ def open_frontdesk_dashboard(user: dict):
             )
 
             # Build lease start and end dates from the selected month/year/period
-            from datetime import date
-            import calendar
             m_idx = MONTHS.index(_get("start_month")) + 1
             y     = int(_get("start_year"))
-            start = date(y, m_idx, 1)
+            start = _date(y, m_idx, 1)
 
             # Calculate end date by moving forward the lease period in months
             end_month = m_idx + period
             end_year  = y + (end_month - 1) // 12
             end_month = ((end_month - 1) % 12) + 1
-            end = date(end_year, end_month, 1)
+            end = _date(end_year, end_month, 1)
 
             # Attempt to find an available apartment matching the selected type
             available = apartment_service.get_available_apartments()
@@ -312,28 +355,51 @@ def open_frontdesk_dashboard(user: dict):
         # Popup form for creating a new maintenance request
         pop = tk.Toplevel(root)
         pop.title("New Maintenance Request")
-        pop.geometry("400x320")
+        pop.geometry("460x340")
         pop.configure(bg="white")
 
-        tk.Label(pop, text="Apartment ID", bg="white").pack(pady=(15, 2))
-        apt_e = tk.Entry(pop, width=30)
-        apt_e.pack()
+        tk.Label(pop, text="Apartment *", bg="white").pack(pady=(15, 2))
+        apt_map = {}
+        try:
+            all_apts = apartment_service.get_all_apartments()
+            for a in all_apts:
+                display = (f"Unit {a.get('unit_number')}  |  "
+                           f"{a.get('property_name', '')}  |  "
+                           f"{a.get('city', '')}  |  "
+                           f"{a.get('apartment_type', '')}  "
+                           f"[{a.get('status', '').upper()}]")
+                apt_map[display] = a["id"]
+        except Exception:
+            pass
+        apt_var = tk.StringVar()
+        apt_combo = ttk.Combobox(pop, textvariable=apt_var,
+                                 values=list(apt_map.keys()),
+                                 state="readonly", width=50)
+        apt_combo.pack()
 
-        tk.Label(pop, text="Description", bg="white").pack(pady=(10, 2))
-        desc_e = tk.Entry(pop, width=30)
+        tk.Label(pop, text="Description *", bg="white").pack(pady=(10, 2))
+        desc_e = tk.Entry(pop, width=45)
         desc_e.pack()
 
         tk.Label(pop, text="Priority", bg="white").pack(pady=(10, 2))
         pri_var = tk.StringVar(value="Medium")
         ttk.Combobox(pop, textvariable=pri_var,
                      values=["Low", "Medium", "High", "Emergency"],
-                     state="readonly", width=28).pack()
+                     state="readonly", width=43).pack()
 
         def submit():
+            selected = apt_var.get().strip()
+            if not selected or selected not in apt_map:
+                messagebox.showerror("Missing", "Please select an apartment.")
+                return
+            desc = desc_e.get().strip()
+            if not desc:
+                messagebox.showwarning("Missing", "Please enter a description.")
+                return
             # Submit the new maintenance request and refresh the table
             try:
                 maintenance_service.create_request(
-                    int(apt_e.get()), desc_e.get(), pri_var.get()
+                    apt_map[selected], desc, pri_var.get()
                 )
                 pop.destroy()
                 refresh_maintenance()
@@ -387,33 +453,50 @@ def open_frontdesk_dashboard(user: dict):
         # Popup window for staff to log a complaint manually
         pop = tk.Toplevel(root)
         pop.title("Log Complaint")
-        pop.geometry("420x320")
+        pop.geometry("460x340")
         pop.configure(bg="white")
 
-        tk.Label(pop, text="Tenant Name", bg="white").pack(pady=(15, 2))
-        name_e = tk.Entry(pop, width=35)
-        name_e.pack()
+        tk.Label(pop, text="Tenant *", bg="white").pack(pady=(15, 2))
+        tenant_map = {}
+        try:
+            for t in tenant_service.get_all_tenants():
+                display = f"{t.get('name', '')}  |  {t.get('ni_number', '')}  |  {t.get('phone', '')}"
+                tenant_map[display] = (t.get("id"), t.get("name", ""))
+        except Exception:
+            pass
+        ten_var = tk.StringVar()
+        ten_combo = ttk.Combobox(pop, textvariable=ten_var,
+                                 values=list(tenant_map.keys()),
+                                 state="readonly", width=50)
+        ten_combo.pack()
 
-        tk.Label(pop, text="Issue Description", bg="white").pack(pady=(10, 2))
-        issue_e = tk.Entry(pop, width=35)
+        tk.Label(pop, text="Issue Description *", bg="white").pack(pady=(10, 2))
+        issue_e = tk.Entry(pop, width=45)
         issue_e.pack()
 
         tk.Label(pop, text="Category", bg="white").pack(pady=(10, 2))
         cat_var = tk.StringVar(value="Other")
         ttk.Combobox(pop, textvariable=cat_var,
                      values=["Noise", "Repair", "Neighbour", "Billing", "Other"],
-                     state="readonly", width=33).pack()
+                     state="readonly", width=43).pack()
 
         def submit():
-            # Basic validation before complaint submission
-            if not name_e.get().strip() or not issue_e.get().strip():
-                messagebox.showwarning("Missing", "Name and issue are required.")
+            selected = ten_var.get().strip()
+            if not selected or selected not in tenant_map:
+                messagebox.showwarning("Missing", "Please select a tenant.")
                 return
+            issue = issue_e.get().strip()
+            if not issue:
+                messagebox.showwarning("Missing", "Issue description is required.")
+                return
+            ten_id, ten_name = tenant_map[selected]
+            # Basic validation before complaint submission
             try:
                 complaint_service.create_complaint(
-                    name_e.get().strip(),
-                    issue_e.get().strip(),
-                    cat_var.get()
+                    ten_name,
+                    issue,
+                    cat_var.get(),
+                    ten_id
                 )
                 pop.destroy()
                 refresh_complaints()

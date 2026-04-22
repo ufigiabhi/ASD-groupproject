@@ -344,21 +344,17 @@ def open_tenant_dashboard(user: dict):
         # Validate the entered description and create the maintenance request
         def do_submit():
             desc = desc_e.get("1.0", tk.END).strip()
-            if not desc:
-                messagebox.showwarning("Missing", "Please describe the issue.")
+            if len(desc) < 10:
+                messagebox.showwarning("Too Short",
+                    "Please describe the issue in at least 10 characters.")
                 return
             try:
-                # Fallback apartment ID used if active lease information cannot be found
-                apt_id = 1  # default; in a real flow this comes from the lease
-                # Try to use the apartment linked to the tenant's active lease
-                if tenant and tenant.get("lease_id"):
-                    # get apartment_id from active lease
-                    from backend.services.lease_service import LeaseService
-                    ls = LeaseService()
-                    lease = ls.get_active_lease_for_tenant(tenant_id)
-                    if lease:
-                        apt_id = lease.get("apartment_id", 1)
-
+                lease = lease_svc.get_active_lease_for_tenant(tenant_id) if tenant_id else None
+                if not lease:
+                    messagebox.showerror("No Active Lease",
+                        "No active lease found. Cannot submit a maintenance request.")
+                    return
+                apt_id = lease.get("apartment_id")
                 # Save the request and refresh the maintenance table
                 maint_svc.create_request(apt_id, desc, pri_var.get(), tenant_id)
                 pop.destroy()
@@ -436,8 +432,9 @@ def open_tenant_dashboard(user: dict):
         # Validate the complaint text and save the complaint record
         def submit():
             issue = issue_e.get("1.0", tk.END).strip()
-            if not issue:
-                messagebox.showwarning("Missing", "Please describe the issue.")
+            if len(issue) < 10:
+                messagebox.showwarning("Too Short",
+                    "Please describe the complaint in at least 10 characters.")
                 return
             try:
                 # Create the complaint and refresh the complaint history table

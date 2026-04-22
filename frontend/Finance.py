@@ -285,10 +285,34 @@ def open_Finance(user: dict):
         e.pack(anchor="w")
         return e
 
-    lbl("Invoice ID *")
-    rec_inv_id = ent()
-    lbl("Tenant ID *")
-    rec_ten_id = ent()
+    _invoice_map = {}
+
+    lbl("Select Invoice *")
+    rec_inv_var = tk.StringVar()
+    rec_inv_combo = ttk.Combobox(rec_frame, textvariable=rec_inv_var,
+                                 state="readonly", width=60)
+    rec_inv_combo.pack(anchor="w")
+
+    def _load_unpaid():
+        all_inv = invoice_svc.get_all_invoices()
+        unpaid = [i for i in all_inv if i.get("status") in ("unpaid", "partial", "overdue")]
+        _invoice_map.clear()
+        options = []
+        for inv in unpaid:
+            month_name = MONTHS[inv.get("month", 1)] if inv.get("month") else ""
+            display = (f"Invoice #{inv['id']}  |  {inv.get('tenant_name', '')}  |"
+                       f"  {month_name} {inv.get('year', '')}  |"
+                       f"  Due: {str(inv.get('due_date', ''))[:10]}  |"
+                       f"  Amount: £{float(inv.get('amount', 0)):,.2f}"
+                       f"  [{inv.get('status', '').upper()}]")
+            _invoice_map[display] = (inv["id"], inv["tenant_id"])
+            options.append(display)
+        rec_inv_combo["values"] = options
+
+    tk.Button(rec_frame, text="Reload Unpaid Invoices", bg=ACCENT, fg="white",
+              relief="flat", font=("Helvetica", 9),
+              command=_load_unpaid).pack(anchor="w", pady=(4, 2))
+
     lbl("Amount Paid (£) *")
     rec_amount = ent()
     lbl("Payment Method *")
@@ -304,15 +328,22 @@ def open_Finance(user: dict):
     tk.Label(tab_rec, textvariable=result_var, bg="white",
              fg="#2e7d32", font=("Helvetica", 11, "bold")).pack(pady=5)
 
+    _load_unpaid()
+
     def record_payment():
-              """Validate and save payment"""
+        selected = rec_inv_var.get().strip()
+        if not selected or selected not in _invoice_map:
+            messagebox.showerror("Invalid", "Please select an invoice from the dropdown.")
+            return
+        inv_id, ten_id = _invoice_map[selected]
         try:
-            inv_id   = int(rec_inv_id.get().strip())
-            ten_id   = int(rec_ten_id.get().strip())
             amount   = float(rec_amount.get().strip())
             late_fee = float(rec_late.get().strip() or "0")
         except ValueError:
-            messagebox.showerror("Invalid", "Invoice ID, Tenant ID and Amount must be numbers.")
+            messagebox.showerror("Invalid", "Amount and late fee must be numbers.")
+            return
+        if amount <= 0:
+            messagebox.showerror("Invalid", "Amount must be greater than zero.")
             return
         try:
             pid, receipt = payment_svc.record_payment(
@@ -321,6 +352,7 @@ def open_Finance(user: dict):
             result_var.set(f"Payment recorded! Receipt: {receipt}")
             refresh_invoices()
             refresh_payments()
+            _load_unpaid()
         except Exception as exc:
             messagebox.showerror("Error", str(exc))
 

@@ -125,13 +125,31 @@ def open_admin_dashboard(user: dict):
         f("Location", "location", "combo", ["-"] + CITIES)
 
         def submit():
+            uname = fields["username"].get().strip()
+            pwd   = fields["password"].get().strip()
+            fname = fields["full_name"].get().strip()
+            email = fields["email"].get().strip()
+            if not uname:
+                messagebox.showerror("Missing", "Username is required.")
+                return
+            if len(pwd) < 6:
+                messagebox.showerror("Weak Password",
+                    "Password must be at least 6 characters.")
+                return
+            if not fname:
+                messagebox.showerror("Missing", "Full name is required.")
+                return
+            if "@" not in email or "." not in email.split("@")[-1]:
+                messagebox.showerror("Invalid Email",
+                    "Please enter a valid email address containing '@'.")
+                return
             try:
                 user_svc.create_user(
-                    username=fields["username"].get().strip(),
-                    password=fields["password"].get().strip(),
+                    username=uname,
+                    password=pwd,
                     role=fields["role"].get(),
-                    full_name=fields["full_name"].get().strip(),
-                    email=fields["email"].get().strip(),
+                    full_name=fname,
+                    email=email,
                     phone=fields["phone"].get().strip() or None,
                     location=(fields["location"].get() or None)
                         if fields["location"].get() != "-" else None,

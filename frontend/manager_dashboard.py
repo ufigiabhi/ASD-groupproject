@@ -279,14 +279,32 @@ def open_manager_dashboard(user: dict):
              fg="#2e7d32", font=("Helvetica", 11, "bold")).pack(pady=5)
 
     def add_property():
+        pname      = prop_name.get().strip()
+        paddr      = prop_addr.get().strip()
+        ppost      = prop_post.get().strip()
+        punits_str = prop_units.get().strip()
+        if not pname:
+            messagebox.showerror("Missing", "Property name is required.")
+            return
+        if not paddr:
+            messagebox.showerror("Missing", "Address is required.")
+            return
+        if not ppost:
+            messagebox.showerror("Missing", "Postcode is required.")
+            return
+        if not punits_str:
+            messagebox.showerror("Missing", "Total units is required.")
+            return
         try:
-            units = int(prop_units.get().strip())
-            year  = int(prop_year.get().strip()) if prop_year.get().strip() else None
-            pid = apt_svc.create_property(
-                prop_name.get().strip(), prop_addr.get().strip(),
-                prop_city.get(), prop_post.get().strip(), units, year
-            )
+            units = int(punits_str)
+            if units <= 0:
+                messagebox.showerror("Invalid", "Total units must be a positive number.")
+                return
+            year = int(prop_year.get().strip()) if prop_year.get().strip() else None
+            pid = apt_svc.create_property(pname, paddr, prop_city.get(), ppost, units, year)
             result_var2.set(f"Property created with ID {pid}.")
+        except ValueError:
+            messagebox.showerror("Invalid", "Total units and year built must be numeric.")
         except Exception as exc:
             messagebox.showerror("Error", str(exc))
 

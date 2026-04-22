@@ -69,9 +69,13 @@ def open_maintenance_dashboard(user: dict):
     for tag, col in tag_map.items():
         tree.tag_configure(tag, background=col)
 
+    _req_map = {}
+
     def refresh_open():
         for row in tree.get_children():
             tree.delete(row)
+        _req_map.clear()
+        options = []
         try:
             for r in svc.get_open_requests():
                 tag = r.get("priority", "Medium")
@@ -87,14 +91,23 @@ def open_maintenance_dashboard(user: dict):
                     str(r.get("submission_date", ""))[:16],
                     r.get("assigned_staff") or "-",
                 ))
+                display = (f"#{r['id']}  |  Unit {r.get('unit_number', '-')}"
+                           f"  |  {r.get('description', '')[:35]}"
+                           f"  [{r.get('priority', '')} / {r.get('status', '')}]")
+                _req_map[display] = r["id"]
+                options.append(display)
         except Exception as exc:
             messagebox.showerror("Error", str(exc))
+        try:
+            req_combo["values"] = options
+            res_combo["values"] = options
+        except Exception:
+            pass
 
-    refresh_open()
     tk.Button(tab_open, text="Refresh", bg=ACCENT, fg="white",
               relief="flat", command=refresh_open).pack(pady=5)
 
-     # TAB 2 - Assign & Update Request
+    # TAB 2 - Assign & Update Request
     tab_update = tk.Frame(nb, bg="white")
     nb.add(tab_update, text="  Update Request  ")
 
@@ -109,16 +122,14 @@ def open_maintenance_dashboard(user: dict):
         tk.Label(frm, text=txt, bg="white",
                  font=("Helvetica", 10)).pack(anchor="w", pady=(10, 2))
 
-    def ent(w=30):
-        e = tk.Entry(frm, width=w, font=("Helvetica", 10))
-        e.pack(anchor="w")
-        return e
-
-    lbl("Request ID *")
-    req_id_e = ent()
+    lbl("Select Open Request *")
+    req_var = tk.StringVar()
+    req_combo = ttk.Combobox(frm, textvariable=req_var, state="readonly", width=60)
+    req_combo.pack(anchor="w")
 
     lbl("Assign to Staff Member")
-    staff_e = ent()
+    staff_e = tk.Entry(frm, width=30, font=("Helvetica", 10))
+    staff_e.pack(anchor="w")
     staff_e.insert(0, username)
 
     result_var = tk.StringVar()
@@ -126,14 +137,15 @@ def open_maintenance_dashboard(user: dict):
              fg="#2e7d32", font=("Helvetica", 10, "bold")).pack(pady=5)
 
     def do_assign():
-        try:
-            rid = int(req_id_e.get().strip())
-        except ValueError:
-            messagebox.showerror("Invalid", "Enter a numeric Request ID.")
+        selected = req_var.get().strip()
+        if not selected or selected not in _req_map:
+            messagebox.showerror("Invalid", "Please select an open request from the dropdown.")
             return
+        rid = _req_map[selected]
+        staff = staff_e.get().strip() or username
         try:
-            svc.assign_staff(rid, staff_e.get().strip() or username)
-            result_var.set(f"Request #{rid} assigned to {staff_e.get().strip()}")
+            svc.assign_staff(rid, staff)
+            result_var.set(f"Request #{rid} assigned to {staff}")
             refresh_open()
         except Exception as exc:
             messagebox.showerror("Error", str(exc))
@@ -141,32 +153,46 @@ def open_maintenance_dashboard(user: dict):
     tk.Button(frm, text="Assign Staff", bg=ACCENT, fg="white",
               relief="flat", command=do_assign).pack(pady=12, anchor="w")
 
-    tk.Label(frm, text="─" * 50, bg="white", fg="#ccc").pack(pady=10, anchor="w")
+    tk.Label(frm, text="-" * 52, bg="white", fg="#ccc").pack(pady=10, anchor="w")
 
     tk.Label(frm, text="Resolve Request",
              font=("Helvetica", 11, "bold"), bg="white", fg="#2e7d32"
              ).pack(anchor="w")
 
-    lbl("Request ID to Resolve *")
-    res_id_e = ent()
+    lbl("Select Request to Resolve *")
+    res_var = tk.StringVar()
+    res_combo = ttk.Combobox(frm, textvariable=res_var, state="readonly", width=60)
+    res_combo.pack(anchor="w")
 
     lbl("Time Taken (hours) *")
-    time_e = ent()
+    time_e = tk.Entry(frm, width=30, font=("Helvetica", 10))
+    time_e.pack(anchor="w")
 
     lbl("Cost (£) *")
-    cost_e = ent()
+    cost_e = tk.Entry(frm, width=30, font=("Helvetica", 10))
+    cost_e.pack(anchor="w")
 
     def do_resolve():
+        selected = res_var.get().strip()
+        if not selected or selected not in _req_map:
+            messagebox.showerror("Invalid", "Please select a request to resolve from the dropdown.")
+            return
+        rid = _req_map[selected]
         try:
-            rid  = int(res_id_e.get().strip())
             hrs  = float(time_e.get().strip())
             cost = float(cost_e.get().strip())
         except ValueError:
-            messagebox.showerror("Invalid", "ID, time and cost must be numbers.")
+            messagebox.showerror("Invalid", "Time taken and cost must be numeric values.")
+            return
+        if hrs <= 0:
+            messagebox.showerror("Invalid", "Time taken must be greater than 0.")
+            return
+        if cost < 0:
+            messagebox.showerror("Invalid", "Cost cannot be negative.")
             return
         try:
             svc.resolve_request(rid, hrs, cost)
-            result_var.set(f"Request #{rid} marked RESOLVED - {hrs}h / £{cost}")
+            result_var.set(f"Request #{rid} marked RESOLVED - {hrs}h / £{cost:.2f}")
             refresh_open()
             refresh_all()
         except Exception as exc:
@@ -214,5 +240,7 @@ def open_maintenance_dashboard(user: dict):
     refresh_all()
     tk.Button(tab_all, text="Refresh", bg=ACCENT, fg="white",
               relief="flat", command=refresh_all).pack(pady=5)
+
+    refresh_open()
 
     root.mainloop()
