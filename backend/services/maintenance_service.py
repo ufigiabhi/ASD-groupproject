@@ -37,12 +37,17 @@ class MaintenanceService:
             (apartment_id, tenant_id, description, priority, "OPEN", datetime.now())
         )
 
+        # Commit the transaction to save the changes
         conn.commit()
+
+        # Retrieve the ID of the newly inserted request
         request_id = cursor.lastrowid
 
+        # Close the cursor and connection to free up resources
         cursor.close()
         conn.close()
 
+        # Return the ID of the new request
         return request_id
 
     def assign_staff(self, request_id, staff_name):
