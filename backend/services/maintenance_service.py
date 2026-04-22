@@ -117,6 +117,17 @@ class MaintenanceService:
         conn.close()
 
     def get_request(self, request_id):
+        """
+        Retrieves a single maintenance request by its ID.
+        
+        Args:
+            request_id: The ID of the maintenance request to retrieve.
+            
+        Returns:
+            result: A dictionary containing the maintenance request details,
+                    or None if no request was found.
+        """
+        
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
