@@ -60,10 +60,12 @@ class MaintenanceService:
             staff_name: The name of the staff member being assigned.
         """
 
-        
+        # Establish a connection to the database
         conn = get_connection()
         cursor = conn.cursor()
 
+        # Update the maintenance request with the assigned staff member
+        # and change the status to "IN_PROGRESS"
         cursor.execute(
             """
             UPDATE maintenance_requests
@@ -74,7 +76,10 @@ class MaintenanceService:
             ("IN_PROGRESS", staff_name, request_id)
         )
 
+        # Commit the transaction to save the changes
         conn.commit()
+
+        # Close the cursor and connection to free up resources
         cursor.close()
         conn.close()
 
