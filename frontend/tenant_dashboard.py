@@ -161,7 +161,7 @@ def open_tenant_dashboard(user: dict):
             ).pack(pady=15, padx=25, anchor="w")
 
     # Record an early termination request after tenant confirmation
-
+    
     def request_early_termination(lease_id):
         if not messagebox.askyesno(
             "Early Termination",
@@ -182,8 +182,10 @@ def open_tenant_dashboard(user: dict):
         except Exception as exc:
             messagebox.showerror("Error", str(exc))
 
+    # Populate the details tab when the dashboard first opens
     load_info()
 
+    # Tab displaying invoice and payment history for the tenant
     # TAB 2 - Payment History
     tab_pay = tk.Frame(nb, bg="white")
     nb.add(tab_pay, text="  Payments  ")
@@ -192,6 +194,7 @@ def open_tenant_dashboard(user: dict):
              font=("Helvetica", 13, "bold"), bg="white", fg=PRIMARY
              ).pack(pady=(15, 5), padx=20, anchor="w")
 
+    # Filter controls for narrowing payment history by month and year
     pay_filter = tk.Frame(tab_pay, bg="white")
     pay_filter.pack(fill="x", padx=20, pady=(0, 8))
 
@@ -203,6 +206,7 @@ def open_tenant_dashboard(user: dict):
     pay_year = ttk.Combobox(pay_filter, values=YEARS, state="readonly", width=8)
     pay_year.set("All"); pay_year.pack(side="left", padx=5)
 
+    # Table columns for invoice and payment history
     cols_p = ("Month", "Year", "Amount", "Due Date", "Status",
               "Paid On", "Method", "Receipt")
     tree_p = ttk.Treeview(tab_pay, columns=cols_p, show="headings", height=16)
@@ -211,26 +215,32 @@ def open_tenant_dashboard(user: dict):
         tree_p.column(c, width=110, anchor="w")
     tree_p.pack(fill="both", expand=True, padx=20, pady=5)
 
+    # Row colours used to visually distinguish invoice/payment status
     tag_cols = {"paid": "#c8e6c9", "overdue": "#ffcdd2",
                 "unpaid": "#fff9c4", "partial": "#ffe0b2"}
     for tag, col in tag_cols.items():
         tree_p.tag_configure(tag, background=col)
 
+    # Reload the payment table using the selected month and year filters
     def refresh_payments():
+        # Clear existing payment rows before inserting refreshed data
         for row in tree_p.get_children():
             tree_p.delete(row)
         if not tenant_id:
             return
         try:
+            # Fetch invoice records for the logged-in tenant
             rows = invoice_svc.get_invoices_for_tenant(tenant_id)
         except Exception as exc:
             messagebox.showerror("Error", str(exc))
             return
 
+        # Read the selected filter values from the combobox controls
         m_filter = MONTH_NUMS.get(pay_month.get(), 0)
         y_filter = pay_year.get()
 
         for r in rows:
+            # Skip rows that do not match the currently selected filters
             if m_filter and r.get("month") != m_filter:
                 continue
             if y_filter != "All" and str(r.get("year")) != y_filter:
@@ -239,6 +249,7 @@ def open_tenant_dashboard(user: dict):
             # Find payment for this invoice
             paid_on = method = receipt = "-"
             try:
+                # Attempt to match each invoice with a recorded payment
                 pays = payment_svc.get_payments_for_tenant(tenant_id)
                 match = next((p for p in pays if p["invoice_id"] == r["id"]), None)
                 if match:
@@ -248,6 +259,7 @@ def open_tenant_dashboard(user: dict):
             except Exception:
                 pass
 
+            # Insert the formatted payment record into the table
             tree_p.insert("", "end", tags=(status,), values=(
                 MONTHS[r.get("month", 1)],
                 r.get("year"),
@@ -257,10 +269,13 @@ def open_tenant_dashboard(user: dict):
                 paid_on, method, receipt
             ))
 
+    # Button used to apply the selected payment filters
     tk.Button(pay_filter, text="Filter", bg=ACCENT, fg="white",
               relief="flat", command=refresh_payments).pack(side="left", padx=10)
+    # Load payment history when the tab is created
     refresh_payments()
 
+    # Tab showing submitted maintenance requests and their progress
     # TAB 3 - Maintenance Requests
     tab_maint = tk.Frame(nb, bg="white")
     nb.add(tab_maint, text="  Maintenance  ")
