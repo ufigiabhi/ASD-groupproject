@@ -29,6 +29,7 @@ def get_conn(with_db=True):
 
 
 def create_database():
+        """Create the database if it does not already exist"""
     conn = get_conn(with_db=False)
     cur = conn.cursor()
     cur.execute(f"CREATE DATABASE IF NOT EXISTS {DB_NAME}")
